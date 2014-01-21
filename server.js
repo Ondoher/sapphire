@@ -1,3 +1,11 @@
+/*
+File: server.js
+
+This is the main sapphire server file. It will handle all of the routing
+for the application. This will be broken into a separate sapphire object
+in the near future
+*/
+
 var cluster = require('cluster');
 var CONFIG = require('config').CONFIG;
 
