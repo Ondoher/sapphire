@@ -1,4 +1,4 @@
-Package('Spa', {
+Package('Sapphire', {
 
 /**********************************************************************************
 	Class: PageManager
@@ -7,13 +7,13 @@ Package('Spa', {
 	Applications have no need to use this class directly
 
 	Extends:
-		<EventManager>
+		<Eventer>
 
 	See Also:
 		<Application>
 */
 	PageManager : new Class({
-		Extends : Spa.EventManager,
+		Extends : Sapphire.Eventer,
 
 	/**********************************************************************************
 		Constructor: initialize
@@ -234,7 +234,7 @@ Package('Spa', {
 
 			page.loading++;
 			if (page.loading == 3) callback(loaded);
-			console.log('Spa.PageManager.stepComplete', name, type, loaded, page.loading);
+			console.log('Sapphire.PageManager.stepComplete', name, type, loaded, page.loading);
 		},
 
 
@@ -256,9 +256,9 @@ Package('Spa', {
 			if (page.selector) callback(false);
 			else
 			{
-				SPA.loader.loadScripts(page.javascript, this.stepComplete.bind(this, name, callback, 'scripts', true));
-				SPA.loader.loadCSS(page.css, this.stepComplete.bind(this, name, callback, 'css', true));
-				SPA.loader.loadMarkup(page, this.stepComplete.bind(this, name, callback, 'markup', true));
+				SAPPHIRE.loader.loadScripts(page.javascript, this.stepComplete.bind(this, name, callback, 'scripts', true));
+				SAPPHIRE.loader.loadCSS(page.css, this.stepComplete.bind(this, name, callback, 'css', true));
+				SAPPHIRE.loader.loadMarkup(page, this.stepComplete.bind(this, name, callback, 'markup', true));
 			}
 		}
 	})

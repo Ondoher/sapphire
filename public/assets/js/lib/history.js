@@ -1,4 +1,4 @@
-Package('Spa', {
+Package('Sapphire', {
 /**********************************************************************************
 	Class: History
 
@@ -7,15 +7,15 @@ Package('Spa', {
 	query string in the url hash
 */
 	History : new Class({
-		Extends : Spa.EventManager,
+		Extends : Sapphire.Eventer,
 
 		initialize : function()
 		{
 			this.parent();
 
 			this.first = false;
-			SPA.application.listenPageEvent('show', '', this.onPageShow.bind(this));
-			SPA.application.listen('start', this.onStart.bind(this));
+			SAPPHIRE.application.listenPageEvent('show', '', this.onPageShow.bind(this));
+			SAPPHIRE.application.listen('start', this.onStart.bind(this));
 		},
 
 		handleFirst : function()
@@ -36,7 +36,7 @@ Package('Spa', {
 		handleEvent : function(event)
 		{
 			var address = this.parseEvent(event);
-			SPA.application.showPage(address.page, address.query);
+			SAPPHIRE.application.showPage(address.page, address.query);
 		},
 
 		getFirst : function()
@@ -73,4 +73,4 @@ Package('Spa', {
 	})
 });
 
-SPA.history = new Spa.History();
+SAPPHIRE.history = new Sapphire.History();

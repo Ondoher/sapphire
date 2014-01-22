@@ -1,13 +1,13 @@
 
-Package('Spa', {
+Package('Sapphire', {
 	Templates : new Class({
-		Extends : Spa.EventManager,
+		Extends : Sapphire.Eventer,
 
 		initialize : function()
 		{
-			SPA.application.listenPageEvent('load', '', this.onLoad.bind(this));
-			SPA.application.listenDialogEvent('load', '', this.onLoad.bind(this));
-			SPA.application.listen('start', this.onStart.bind(this));
+			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this));
+			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this));
+			SAPPHIRE.application.listen('start', this.onStart.bind(this));
 			this.templates = $H({});
 		},
 
@@ -43,4 +43,4 @@ Package('Spa', {
 	})
 });
 
-SPA.templates = new Spa.Templates();
+SAPPHIRE.templates = new Sapphire.Templates();

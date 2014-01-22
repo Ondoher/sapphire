@@ -1,6 +1,6 @@
 
-Package('Spa', {
+Package('Sapphire', {
 	View : new Class({
-		Extends : Spa.EventManager
+		Extends : Sapphire.Eventer
 	})
 });

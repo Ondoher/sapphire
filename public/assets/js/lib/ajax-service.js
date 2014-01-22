@@ -3,7 +3,7 @@
 Class: AjaxService
 
 Use this class as a mixin to support ajax in your service. The outer class
-is assumed to extend EventManager at some level.
+is assumed to extend Eventer at some level.
 
 Fires:
 	ajaxResponse	- passed the response from the service
@@ -11,7 +11,7 @@ Fires:
 *****************************************************************************/
 
 
-Package('Spa.Services', {
+Package('Sapphire.Services', {
 	AjaxService : new Class({
 		initializeAjaxService : function()
 		{

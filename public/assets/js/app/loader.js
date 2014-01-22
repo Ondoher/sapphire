@@ -1,4 +1,4 @@
-Package('Spa', {
+Package('Sapphire', {
 
 /**********************************************************************************
 	Class: Loader
@@ -7,14 +7,14 @@ Package('Spa', {
 	CSS and Markup
 
 	Extends:
-		<EventManager>
+		<Eventer>
 
 	See Also:
 		<Application>, <PageManager>
 */
 
 	Loader : new Class({
-		Extends : Spa.EventManager,
+		Extends : Sapphire.Eventer,
 
 	/**********************************************************************************
 		Constructor: initialize
@@ -251,4 +251,4 @@ Package('Spa', {
 		}
 	})
 });
-SPA.loader = new Spa.Loader();
+SAPPHIRE.loader = new Sapphire.Loader();

@@ -1,12 +1,12 @@
-Package('Spa', {
+Package('Sapphire', {
 
 /**********************************************************************************
-	Class: EventManager
+	Class: Eventer
 
 	Use this class to manage the listening and fireing of events. It can be used by either
 	Extending it, or by making an instance of it within your own class.
 */
-	EventManager : new Class({
+	Eventer : new Class({
 
 	/**********************************************************************************
 		Constructor: initialize

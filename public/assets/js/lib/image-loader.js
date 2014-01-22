@@ -1,6 +1,6 @@
-Package('Spa', {
+Package('Sapphire', {
 	ImageLoader : new Class({
-		Extends : Spa.EventManager,
+		Extends : Sapphire.Eventer,
 
 		initialize : function()
 		{
@@ -64,6 +64,6 @@ Package('Spa', {
 	})
 });
 
-SPA.imageLoader = new Spa.ImageLoader();
+SAPPHIRE.imageLoader = new Sapphire.ImageLoader();
 
 

@@ -1,23 +1,23 @@
 /**********************************************************************************
 	Class: Application
 
-	A global instance of this class named Spa.application manages the basic functions of a JavaScript Application,
+	A global instance of this class named SAPPHIRE.application manages the basic functions of a JavaScript Application,
 	such as page management and the startup sequence.  Some of these functions will be called automatically using
-	JavaScript snippets inserted when the application was built, see <SpaBuilder>. Other functions will be called from
+	JavaScript snippets inserted when the application was built, see <Application>. Other functions will be called from
 	within your	specific application.
 
 	Extends:
-		<EventManager>
+		<Eventer>
 
 	See Also:
-		<PageManager>, <EventManager>
+		<PageManager>, <Eventer>
 */
 
 
-Package('Spa', {
+Package('Sapphire', {
 	Application : new Class({
 
-		Extends : Spa.EventManager,
+		Extends : Sapphire.Eventer,
 
 	/**********************************************************************************'
 		Constructor: initialize
@@ -27,8 +27,8 @@ Package('Spa', {
 		initialize : function()
 		{
 			this.parent();
-			this.pages = new Spa.PageManager(true);
-			this.dialogs = new Spa.PageManager(false);
+			this.pages = new Sapphire.PageManager(true);
+			this.dialogs = new Sapphire.PageManager(false);
 
 			this.startPage = '';
 			this.started = false;
@@ -273,7 +273,7 @@ Package('Spa', {
 	})
 });
 
-SPA.application = new Spa.Application();
+SAPPHIRE.application = new Sapphire.Application();
 
 //===========================================================================================
 // Group: Callbacks

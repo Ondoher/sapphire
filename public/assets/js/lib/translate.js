@@ -3,7 +3,7 @@
 
 	This class implements the translation functionality.
 */
-Package('Spa', {
+Package('Sapphire', {
 	Translate : new Class({
 		globals : [],
 		lookups : {},
@@ -23,7 +23,7 @@ Package('Spa', {
 			this.marklar = qs.marklar;
 
 			this.translateReplacements.delay(1, this);
-			SPA.application.listen('ready', this.onReady.bind(this));
+			SAPPHIRE.application.listen('ready', this.onReady.bind(this));
 		},
 
 
@@ -96,7 +96,7 @@ Package('Spa', {
 	/**********************************************************************************
 		Method: translateDocument
 
-		Call this to translate the entire document. IT does this by finding every element
+		Call this to translate the entire document. It does this by finding every element
 		with the class 'translate' and runs the innerHTML of that element through
 		translateText. The class 'translate' is removed from those elements
 	*/
@@ -129,19 +129,17 @@ Package('Spa', {
 				}
 				catch(e){};
 			}.bind(this));
-
-
 		}
 	})
 });
 
-SPA.translate = new Spa.Translate();
+SAPPHIRE.translate = new Sapphire.Translate();
 
 /**********************************************************************************
 	Function: _T
 
 	Call this to translate the given string, using the given replacements. This
-	is a shortcut for TRANSLATE.translateText.
+	is a shortcut for SAPPHIRE.translate.translateText.
 
 	Parameters:
 		text			- the string to lookup
@@ -152,5 +150,5 @@ SPA.translate = new Spa.Translate();
 */
 function _T(text, replacements)
 {
-	return SPA.translate.translateText(text, replacements);
+	return SAPPHIRE.translate.translateText(text, replacements);
 }

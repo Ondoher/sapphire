@@ -1,4 +1,4 @@
-Package('Spa.Services', {
+Package('Sapphire.Services', {
 
 /**********************************************************************************
 	Class: SocketService
@@ -6,7 +6,7 @@ Package('Spa.Services', {
 		<EventManaer>
 */
 	SocketService : new Class({
-		Extends : Spa.EventManager,
+		Extends : Sapphire.Eventer,
 
 		initializeSocketService : function(server)
 		{

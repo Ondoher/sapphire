@@ -13,7 +13,7 @@ var Facebook = new Class({
 		this.appUrl = {};
 		this.me = {};
 
-		this.events = new EventManager();
+		this.events = new Eventer();
 	},
 
 	listen : function(rEvent, rFunction)
