@@ -40,6 +40,7 @@ else
 	var connect = require('connect');
 	var notFound = require('notFound');
 	var staticRouter = require('staticRouter');
+	var log = require('log');
 	var appPath = require('appPath');
 	var appRouter = require('appRouter');
 	var serviceRouter = require('serviceRouter');
@@ -61,7 +62,8 @@ else
 	});
 
 	server = http.createServer(connect()
-		.use(errorHandler())
+//		.use(errorHandler())
+		.use(log())
 		.use(Cookies.connect())
 		.use(connect.query())
 		.use(connect.bodyParser())
@@ -70,7 +72,7 @@ else
 		.use(staticRouter())
 		.use(serviceRouter())
 		.use(appRouter())
-		.use(notFound())
+//		.use(notFound())
 	).listen(listenPort);
 
 

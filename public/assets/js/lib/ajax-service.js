@@ -34,7 +34,6 @@ Package('Sapphire.Services', {
 
 		onAjaxSuccess : function(callback, response)
 		{
-			console.log('ajaxSuccess', response);
 			if (callback) callback(response);
 			this.fire('ajaxResponse', response);
 		},

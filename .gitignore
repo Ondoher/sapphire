@@ -1,0 +1,5 @@
+/apps
+.project
+/.settings
+newrelic_agent.log
+/newrelic_agent.log

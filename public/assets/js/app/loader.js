@@ -107,7 +107,6 @@ Package('Sapphire', {
 
 		loadScript : function (url, callback)
 		{
-			console.log('Loader', 'loadScript', url);
 			var script = $('<script></script>');
 			if (typeof script.onreadystatechange != 'undefined')
 			{
@@ -118,10 +117,8 @@ Package('Sapphire', {
 			}
 			else
 			{
-				console.log('Loader', 'loadScript', 'using onload');
 				script.on('load', function()
 				{
-					console.log('Loader', 'loadScript', 'loaded', url);
 					callback();
 				}.bind(this));
 			}
@@ -149,24 +146,12 @@ Package('Sapphire', {
 			{
 				callback();
 				return;
-				console.log('Loader', 'loadNextScript', 'done');
 			}
 
 			script = list[0];
 			list.splice(0, 1);
 
-			console.log('Loader', 'loadNextScript', script);
-
 			this.addLoadedScript(script); // make global loader
-
-		// this will never do, I must fix
-	/*
-			$(document).ajaxError(function(e, xhr, settings, exception) {
-			    console.log('error in: ' + settings.url + ' \n'+'error:\n' + exception );
-			});
-			$.getScript(script, this.loadNextScript.bind(this, list, callback, script));
-	*/
-
 			this.loadScript(script, this.loadNextScript.bind(this, list, callback, script));
 		},
 
@@ -205,7 +190,6 @@ Package('Sapphire', {
 			{
 				callback();
 				return;
-				console.log('Loader', 'loadNextCSS', 'done');
 			}
 
 			css = list[0];

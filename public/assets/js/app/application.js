@@ -29,6 +29,7 @@ Package('Sapphire', {
 			this.parent();
 			this.pages = new Sapphire.PageManager(true);
 			this.dialogs = new Sapphire.PageManager(false);
+			this.panels = $H({});
 
 			this.startPage = '';
 			this.started = false;
@@ -68,6 +69,12 @@ Package('Sapphire', {
 			this.dialogs.addPage(spec);
 		},
 
+		addPanel : function(name, spec)
+		{
+			if (!this.panels.has(name)) this.panels[name] = new Sapphire.PageManager(true);
+			this.panels[name].addPage(spec);
+		},
+
 	/**********************************************************************************'
 		Method: showPage
 
@@ -84,9 +91,33 @@ Package('Sapphire', {
 	*/
 		showPage : function(name)
 		{
-			console.log('show page', name);
 		 	var passed = Array.prototype.slice.call(arguments, 1);
 			this.pages.showPage(name, passed);
+		},
+
+	/**********************************************************************************'
+		Method: showPanel
+
+		Call this method to hide the current page and show a new one. If the current page
+		has not been maked as dontPrune, then it will be removed from the DOM. Before the
+		page has been removed, any hide events will be fired. The show events will fired
+		once the page has been added back into the DOM.
+
+
+		Parameters:
+			name    - the name of the page
+			...     - Any arguments passed after name will be passed to any listeners for
+					  this page
+	*/
+		showPanel : function(set, name)
+		{
+		 	var passed = Array.prototype.slice.call(arguments, 1);
+			this.panels[set].showPage(name, passed);
+		},
+
+		setPanelContainer : function(name, selector)
+		{
+			this.panels[name].setContainer(selector);
 		},
 
 	/**********************************************************************************'
@@ -116,8 +147,12 @@ Package('Sapphire', {
 		showDialog : function(name)
 		{
 		    var passed = Array.prototype.slice.call(arguments, 1);
+			var deferred = Q.defer();
+			passed.unshift(deferred);
 
 			this.dialogs.showPage(name, passed);
+
+			return deferred.promise;
 		},
 
 	/**********************************************************************************'
@@ -150,7 +185,6 @@ Package('Sapphire', {
 
 		checkReady : function()
 		{
-			console.log('checkReady', this.readyWaiting);
 			this.readyWaiting--;
 			if (this.readyWaiting == 0) this.ready();
 		},
@@ -176,12 +210,10 @@ Package('Sapphire', {
 	*/
 		start : function()
 		{
-			console.log('start');
 			if (this.started) return;
 			this.started = true;
 
 			this.readyWaiting = this.getEventCount('start');
-			console.log(this.readyWaiting);
 			if (this.readyWaiting == 0) this.ready.delay(1, this);
 
 			this.fire('start', this.checkReady.bind(this));
@@ -198,6 +230,12 @@ Package('Sapphire', {
 		{
 			if (which) this.dialogs.listenPageEvent(event, which, callback)
 			else this.dialogs.listenGlobalEvent(event, callback);
+		},
+
+		listenPanelEvent : function(event, set, which, callback)
+		{
+			if (which) this.panels[set].listenPageEvent(event, which, callback)
+			else this.panels[set].listenGlobalEvent(event, callback);
 		},
 
 	/**********************************************************************************'

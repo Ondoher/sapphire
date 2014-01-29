@@ -107,6 +107,13 @@ Package('Sapphire', {
 		showPage : function(name, passed)
 		{
 			var page = this.pages[name];
+			var canShow = true;
+
+			this.fire('canShow', name, function(can)
+			{
+				canShow = canShow && can;
+			}.bind(this));
+			if (!canShow) return;
 
 			this.loadPage(name, function(loaded)
 			{
@@ -133,6 +140,12 @@ Package('Sapphire', {
 
 				this.showEffect(page.selector, this.afterShowEffect.bind(this, name, passed));
 			}.bind(this));
+		},
+
+		show : function(name)
+		{
+		 	var passed = Array.prototype.slice.call(arguments, 1);
+			this.showPage(name, passed);
 		},
 
 	/**********************************************************************************
@@ -234,7 +247,6 @@ Package('Sapphire', {
 
 			page.loading++;
 			if (page.loading == 3) callback(loaded);
-			console.log('Sapphire.PageManager.stepComplete', name, type, loaded, page.loading);
 		},
 
 

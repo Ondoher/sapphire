@@ -34,11 +34,15 @@ Package('Sapphire', {
 		{
 			this.grab();
 			callback();
+			SAPPHIRE.application.panels.each(function(panel, name)
+			{
+				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this));
+			}, this);
 		},
 
 		onLoad : function()
 		{
-			this.grab();
+			this.grab.delay(1, this);
 		}
 	})
 });
