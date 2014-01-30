@@ -5,8 +5,8 @@
 */
 Package('Sapphire', {
 	Translate : new Class({
-		globals : [],
-		lookups : {},
+		globals : {},
+		translations : {},
 
 	/**********************************************************************************
 		Constructor: initialize
@@ -15,21 +15,29 @@ Package('Sapphire', {
 	*/
 		initialize : function()
 		{
-			this.globals = window.globalReplacements?window.globalReplacements:{};
-			this.lookups = window.lookups?$H(window.lookups):$H({});
+			this.globals = window.replacements?window.replacements:{};
+			this.translations = window.translations?$H(window.translations):$H({});
 
 			var qs = window.location.search.slice(window.location.search.indexOf('?') + 1).parseQueryString(true, true);
 
 			this.marklar = qs.marklar;
 
 			this.translateReplacements.delay(1, this);
-			SAPPHIRE.application.listen('ready', this.onReady.bind(this));
+			SAPPHIRE.application.listen('start', this.onStart.bind(this));
+			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this));
+			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this));
 		},
 
 
-		onReady : function()
+		onStart : function(finish)
 		{
 			this.translateDocument();
+			SAPPHIRE.application.panels.each(function(panel, name)
+			{
+				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this));
+			}, this);
+
+			finish();
 		},
 
 		translateReplacements : function()
@@ -57,13 +65,13 @@ Package('Sapphire', {
 	*/
 		lookup : function(text)
 		{
-			if (!this.lookups.has(text))
+			if (!this.translations.has(text))
 			{
 	//			console.log('missing translation', text);
 				if (this.marklar == 'missing')
 					return 'marklar';
 			}
-			return this.lookups.has(text)?this.lookups.get(text):text;
+			return this.translations.has(text)?this.translations.get(text):text;
 		},
 
 	/**********************************************************************************
@@ -129,9 +137,16 @@ Package('Sapphire', {
 				}
 				catch(e){};
 			}.bind(this));
+		},
+
+		onLoad : function(name)
+		{
+			console.log('translate load', name);
+			this.translateDocument();
 		}
 	})
 });
+
 
 SAPPHIRE.translate = new Sapphire.Translate();
 

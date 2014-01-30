@@ -17,31 +17,34 @@ Package('Sapphire.Services', {
 		{
 		},
 
-		call : function(which, data, callback, method, type)
+		call : function(which, data, method, type)
 		{
+			var deferred = Q.defer();
 			method = (method=== undefined)?'POST':method;
 			type = (type === 'iframe')?'json':type;
 			type = (type === undefined)?'json':type;
 			$.ajax({
 				data: data,
 				dataType: type,
-				error: this.onAjaxError.bind(this, callback),
-				success: this.onAjaxSuccess.bind(this, callback),
+				error: this.onAjaxError.bind(this, deferred),
+				success: this.onAjaxSuccess.bind(this, deferred),
 				type: method,
 				url: which
 			});
+
+			return deferred.promise;
 		},
 
-		onAjaxSuccess : function(callback, response)
+		onAjaxSuccess : function(deferred, response)
 		{
-			if (callback) callback(response);
+			deferred.resolve(response);
 			this.fire('ajaxResponse', response);
 		},
 
-		onAjaxError : function(callback, jqXHR, textStatus, errorThrown)
+		onAjaxError : function(deferred, jqXHR, textStatus, errorThrown)
 		{
 			console.log('ajaxError', jqXHR, textStatus, errorThrown);
-			if (callback) callback(null);
+			deferred.reject(errorThrown);
 			this.fire('ajaxError', jqXHR, textStatus, errorThrown);
 		}
 	})
