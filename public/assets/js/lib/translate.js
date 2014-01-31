@@ -24,8 +24,8 @@ Package('Sapphire', {
 
 			this.translateReplacements.delay(1, this);
 			SAPPHIRE.application.listen('start', this.onStart.bind(this));
-			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this));
-			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this));
+			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this, 'page'));
+			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this, 'dialog'));
 		},
 
 
@@ -34,7 +34,7 @@ Package('Sapphire', {
 			this.translateDocument();
 			SAPPHIRE.application.panels.each(function(panel, name)
 			{
-				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this));
+				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this, 'panel'));
 			}, this);
 
 			finish();
@@ -139,9 +139,9 @@ Package('Sapphire', {
 			}.bind(this));
 		},
 
-		onLoad : function(name)
+		onLoad : function(type)
 		{
-			console.log('translate load', name);
+			console.log('translate load', type);
 			this.translateDocument();
 		}
 	})

@@ -108,6 +108,7 @@ Package('Sapphire', {
 		{
 			var page = this.pages[name];
 			var canShow = true;
+			var passedJSON = JSON.stringify(passed);
 
 			this.fire('canShow', name, function(can)
 			{
@@ -118,12 +119,13 @@ Package('Sapphire', {
 			this.loadPage(name, function(loaded)
 			{
 			// Remove the current page if needed
-				if (this.currentPage == name) return;
+				if (this.currentPage == name && passedJSON == this.passedJSON) return;
 
 				if (this.currentPage && this.exclusive)
 					this.hidePage(this.currentPage);
 
 				this.currentPage = name;
+				this.passedJSON = passedJSON
 
 			//!Pending: should we increment z-order here?
 				if (!page.dontPrune || !page.shown)

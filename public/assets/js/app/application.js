@@ -93,6 +93,7 @@ Package('Sapphire', {
 		{
 		 	var passed = Array.prototype.slice.call(arguments, 1);
 			this.pages.showPage(name, passed);
+			this.hasShownPage = true;
 		},
 
 	/**********************************************************************************'
@@ -196,7 +197,7 @@ Package('Sapphire', {
 
 			this.fire('ready');
 
-			if (this.startPage) this.showPage(this.startPage);
+			if (this.startPage && !this.hasShownPage) this.showPage(this.startPage);
 		},
 
 	/**********************************************************************************'

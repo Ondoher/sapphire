@@ -5,8 +5,8 @@ Package('Sapphire', {
 
 		initialize : function()
 		{
-			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this));
-			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this));
+			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this, 'page'));
+			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this, 'dialog'));
 			SAPPHIRE.application.listen('start', this.onStart.bind(this));
 			this.templates = $H({});
 		},
@@ -37,13 +37,13 @@ Package('Sapphire', {
 			callback();
 			SAPPHIRE.application.panels.each(function(panel, name)
 			{
-				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this));
+				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this, 'panel'));
 			}, this);
 		},
 
-		onLoad : function(name)
+		onLoad : function(type)
 		{
-			console.log('templates load', name);
+			console.log('templates load', type);
 			this.grab();
 		}
 	})
