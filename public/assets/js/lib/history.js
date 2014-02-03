@@ -61,7 +61,7 @@ Package('Sapphire', {
 		{
 			this.fire('change', event, this.first != false);
 			if (this.first) this.first = false;
-			else this.handleEvent(event);
+			this.handleEvent(event);
 		},
 
 		onPageShow : function(name, query)
