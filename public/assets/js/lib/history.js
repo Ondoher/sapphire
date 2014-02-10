@@ -48,6 +48,7 @@ Package('Sapphire', {
 		{
 			$.address.init(this.onInit.bind(this));
 			$.address.change(this.onChange.bind(this));
+			$.address.autoUpdate(false);
 			callback();
 		},
 
@@ -69,6 +70,7 @@ Package('Sapphire', {
 			var queryStr = Object.toQueryString(query);
 			$.address.path(name);
 			$.address.queryString(queryStr);
+			$.address.update();
 		}
 	})
 });
