@@ -1388,7 +1388,7 @@ var Cookie = new Class({
 		domain: false,
 		duration: false,
 		secure: false,
-		document: window.document,
+		document: document,
 		encode: true
 	},
 
@@ -1412,7 +1412,6 @@ var Cookie = new Class({
 	},
 
 	read: function(){
-		console.log('Cookie::read', this.options);
 		var value = this.options.document.cookie.match('(?:^|;)\\s*' + this.key.escapeRegExp() + '=([^;]*)');
 		return (value) ? decodeURIComponent(value[1]) : null;
 	},

@@ -37,7 +37,6 @@ Package('Sapphire.Services', {
 			var deferred = Q.defer();
 			var data = $H(data);
 			if (this.account !== null) data.account = this.account;
-			console.log('cookie', Cookie.read('sessionId'));
 			data.path = path;
 			data.sessionId = Cookie.read('sessionId');
 			this.socket.emit('message', path, data, function(data)
@@ -45,9 +44,11 @@ Package('Sapphire.Services', {
 				if (data)
 				{
 					this.fire('socketMessage', data);
-					callback(data.result);
+					deferred.resolve(data);
 				}
 			}.bind(this));
+
+			return deferred.promise;
 		},
 
 	/**********************************************************************************
@@ -63,16 +64,30 @@ Package('Sapphire.Services', {
 	*/
 		socketListen : function(what, callback)
 		{
-			this.socket.on(what, function(data, callback)
+			//console.log('socketListen', what);
+			this.socket.on(what, function(data, returnCallback)
 			{
+				//console.log(what, data);
 				if (data)
 				{
 					this.fire('socketMessage', data);
-					if (callback) callback(data.body, callback);
+					if (callback) callback(data, callback);
 				}
 			}.bind(this));
 		},
 
+	/**********************************************************************************
+		Method: socketUnlisten
+
+		Call this function to stop listening for a message from the server
+
+		Parameters:
+			what     - the message being sent from the sever
+	*/
+		socketUnlisten : function(what, callback)
+		{
+			this.socket.removeAllListeners(what);
+		},
 
 	/**********************************************************************************
 		Group: Event Handlers
