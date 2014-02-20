@@ -1,3 +1,4 @@
+
 Package('Sapphire.Services', {
 
 /**********************************************************************************
@@ -6,17 +7,16 @@ Package('Sapphire.Services', {
 		<EventManaer>
 */
 	SocketService : new Class({
-		Extends : Sapphire.Eventer,
 
-		initializeSocketService : function(server)
+		initializeSocketService : function()
+		{
+		},
+
+		setupSocketServer : function(server)
 		{
 			this.socket = io.connect(server, {reconnect: true});
 			this.socket.on('error', this.onSocketError.bind(this));
 			console.log('SocketService', 'initializeSocketService', server);
-		},
-
-		newSocketServer : function(service)
-		{
 		},
 
 	/**********************************************************************************
@@ -32,11 +32,14 @@ Package('Sapphire.Services', {
 			callback - the function to call with the result.
 	*/
 
-		message : function(path, data, callback)
+		message : function(path, data)
 		{
+			var deferred = Q.defer();
 			var data = $H(data);
 			if (this.account !== null) data.account = this.account;
+			console.log('cookie', Cookie.read('sessionId'));
 			data.path = path;
+			data.sessionId = Cookie.read('sessionId');
 			this.socket.emit('message', path, data, function(data)
 			{
 				if (data)

@@ -174,7 +174,7 @@ var Type = this.Type = function(name, object){
 			object.prototype.$family = (function(){
 				return lower;
 			}).hide();
-			
+
 		}
 	}
 
@@ -1290,7 +1290,7 @@ this.Events = new Class({
 	addEvent: function(type, fn, internal){
 		type = removeOn(type);
 
-		
+
 
 		this.$events[type] = (this.$events[type] || []).include(fn);
 		if (internal) fn.internal = true;
@@ -1388,7 +1388,7 @@ var Cookie = new Class({
 		domain: false,
 		duration: false,
 		secure: false,
-		document: document,
+		document: window.document,
 		encode: true
 	},
 
@@ -1412,6 +1412,7 @@ var Cookie = new Class({
 	},
 
 	read: function(){
+		console.log('Cookie::read', this.options);
 		var value = this.options.document.cookie.match('(?:^|;)\\s*' + this.key.escapeRegExp() + '=([^;]*)');
 		return (value) ? decodeURIComponent(value[1]) : null;
 	},

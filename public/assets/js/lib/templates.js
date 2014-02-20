@@ -17,7 +17,6 @@ Package('Sapphire', {
 			{
 				var selector = $(element);
 				var id = selector.attr('id');
-				console.log('template:', id, selector.html());
 				selector.removeClass('template');
 				this.templates[id] = selector.remove();
 			}.bind(this));
@@ -43,7 +42,6 @@ Package('Sapphire', {
 
 		onLoad : function(type)
 		{
-			console.log('templates load', type);
 			this.grab();
 		}
 	})
