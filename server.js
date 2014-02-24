@@ -58,6 +58,9 @@ else
 	var serviceRouter = require('serviceRouter');
 	var socketRouter = require('socketRouter');
 	var errorHandler = require('errorHandler');
+	var Q = require("q");
+
+	Q.longStackSupport = true;
 
 	var listenPort = CONFIG.port?CONFIG.port:8088;
 	var socketPort = process.env.socketPort;
@@ -95,6 +98,8 @@ else
 	server.listen(listenPort);
 	console.info(process.pid, 'Server running at http://127.0.0.1:' + listenPort + '/');
 
+//	io = require('socket.io').listen(server);
+//	if (CONFIG.baseSocketPort && false)
 	if (CONFIG.baseSocketPort)
 	{
 		io = require('socket.io').listen(server);

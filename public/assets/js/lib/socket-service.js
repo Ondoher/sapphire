@@ -10,12 +10,28 @@ Package('Sapphire.Services', {
 
 		initializeSocketService : function()
 		{
+			this.connected = false;
+			this.sockets = $H({});
 		},
 
 		setupSocketServer : function(server)
 		{
-			this.socket = io.connect(server, {reconnect: true});
-			this.socket.on('error', this.onSocketError.bind(this));
+			if (this.sockets[server])
+			{
+				this.socket = this.sockets[server];
+				this.socket.socket.reconnect();
+			}
+			else
+			{
+				this.socket = io.connect(server, {reconnect: false, 'connect timeout': 2000 });
+				this.sockets[server] = this.socket;
+				this.socket.on('error', this.onSocketError.bind(this));
+				this.socket.on('disconnect', this.onSocketDisconnect.bind(this));
+				this.socket.on('connect', this.onSocketConnect.bind(this));
+				this.socket.on('connect_failed', this.onSocketConnectFailed.bind(this));
+				this.socket.on('reconnecting', this.onSocketReconnecting.bind(this));
+			}
+
 			console.log('SocketService', 'initializeSocketService', server);
 		},
 
@@ -65,6 +81,7 @@ Package('Sapphire.Services', {
 		socketListen : function(what, callback)
 		{
 			//console.log('socketListen', what);
+			this.socket.removeAllListeners(what);
 			this.socket.on(what, function(data, returnCallback)
 			{
 				//console.log(what, data);
@@ -96,14 +113,63 @@ Package('Sapphire.Services', {
 	/**********************************************************************************
 		Method: onSocketError
 
-		Handler for the socket error, it just logs the message to the console. Note: this
-		will be moved into a separate js file.
+		Handler for the socket error, it just logs the message to the console.
 	*/
 
 		onSocketError : function(error)
 		{
+			if (!this.connected)
+				this.fire('socketConnectFailed');
+			console.log('SocketServer::onSocketError', this.connected, error);
 			this.fire('socketError', error);
+		},
+
+	/**********************************************************************************
+		Method: onSocketDisconnect
+
+	*/
+
+		onSocketDisconnect : function()
+		{
+			console.log('SocketServer::onSocketDisconnect');
+			this.connected = false;
+			this.fire('socketDisconnect');
+		},
+
+	/**********************************************************************************
+		Method: onSocketConnect
+
+	*/
+
+		onSocketConnect : function()
+		{
+			console.log('SocketServer::onSocketConnect');
+			this.connected = true;
+			this.fire('socketConnect');
+		},
+
+	/**********************************************************************************
+
+	*/
+
+		onSocketReconnecting : function()
+		{
+			console.log('SocketServer::onSocketReconnecting');
+		},
+
+	/**********************************************************************************
+		Method: onSocketConnectFailed
+
+	*/
+
+		onSocketConnectFailed : function()
+		{
+			console.log('SocketServer::onSocketConnectFailed');
+			this.connected = false;
+			this.fire('socketConnectFailed');
 		}
+
+
 	})
 });
 
