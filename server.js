@@ -103,6 +103,7 @@ else
 	if (CONFIG.baseSocketPort)
 	{
 		io = require('socket.io').listen(server);
+		io.set('log level', 0);
 		socketRouter.listen(socketPort);
 		console.info(process.pid, 'Socket server running at http://127.0.0.1:' + socketPort);
 	}
