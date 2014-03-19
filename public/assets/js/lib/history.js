@@ -27,8 +27,10 @@ Package('Sapphire', {
 		{
 			var result = {};
 			var paths = event.path.split('/');
-			var path = paths[paths.length - 1];
+			paths.shift();
+			var path = paths[0];
 			result.page = path;
+			result.path = event.path;
 			result.query = (event.queryString != '')?event.queryString.parseQueryString():{};
 			return result;
 		},
@@ -36,7 +38,10 @@ Package('Sapphire', {
 		handleEvent : function(event)
 		{
 			var address = this.parseEvent(event);
-			SAPPHIRE.application.showPage(address.page, address.query);
+
+			console.log('History::handleEvent', address);
+
+			SAPPHIRE.application.showPage(address.page, address.path, address.query);
 		},
 
 		getFirst : function()
@@ -60,15 +65,25 @@ Package('Sapphire', {
 
 		onChange : function(event)
 		{
+			if (this.ignoreChange)
+			{
+				this.ignoreChange = false;
+				return;
+			}
+			this.ignoreChange = false;
+
 			this.fire('change', event, this.first != false);
 			if (this.first) this.first = false;
 			this.handleEvent(event);
 		},
 
-		onPageShow : function(name, query)
+		onPageShow : function(name, path, query)
 		{
+			path = (path !== undefined)?path:name;
+
+			this.ignoreChange = true;
 			var queryStr = Object.toQueryString(query);
-			$.address.path(name);
+			$.address.path(path);
 			$.address.queryString(queryStr);
 			$.address.update();
 		}
