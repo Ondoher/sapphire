@@ -45,7 +45,6 @@ Package('Sapphire.Services', {
 		Parameters:
 			path     - the path to the message, starting with the application name, e.g. /geoveris/account/login.
 			data     - all the data that needs to be passed to the service.
-			callback - the function to call with the result.
 	*/
 
 		message : function(path, data)
