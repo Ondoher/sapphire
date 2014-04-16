@@ -68,6 +68,11 @@ Package('Sapphire', {
 				eventList.erase(id);
 		},
 
+		removeAll : function(name)
+		{
+			this.events.set(name, new Hash());
+		},
+
 	/**********************************************************************************
 		Method: getCount
 
