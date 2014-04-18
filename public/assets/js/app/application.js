@@ -253,8 +253,7 @@ Package('Sapphire', {
 	*/
 		setPageEffects : function (show, hide)
 		{
-			if (show) this.pages.showEffect = show;
-			if (hide) this.pages.hideEffect = hide;
+			this.pages.setEffects(show, hide);
 		},
 
 	/**********************************************************************************'
@@ -271,8 +270,12 @@ Package('Sapphire', {
 	*/
 		setDialogEffects : function (show, hide)
 		{
-			if (show) this.dialogs.showEffect = show;
-			if (hide) this.dialogs.hideEffect = hide;
+			this.dialogs.setEffects(show, hide);
+		},
+
+		setPanelEffects : function (name, show, hide)
+		{
+			this.panels[name].setEffects(show, hide);
 		},
 
 		registerController : function(name, controller)
@@ -323,10 +326,11 @@ SAPPHIRE.application = new Sapphire.Application();
 	When you call <setPageEffects> or <setDialogEffects> your showEffect
 	callback should look like this.
 
-	> showEffect: function(node, callback)
+	> showEffect: function(oldPage, newPage, callback)
 
 	Parameters:
-		node        - the JQuery selector of the page or dialog being shown
+		oldPage		- the jQuery selector for the page being hidden
+		newPage     - the JQuery selector of the page or dialog being shown
 		callback    - a function to call when the effect has finished
 
 */

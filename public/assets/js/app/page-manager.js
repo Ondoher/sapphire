@@ -79,7 +79,7 @@ Package('Sapphire', {
 			- show
 			- show.<name>
 	*/
-		afterShowEffect : function(name, passed)
+		afterShowEffect : function(name, oldPage, passed)
 		{
 			var page = this.pages[name];
 			if (!page.shown)
@@ -92,6 +92,8 @@ Package('Sapphire', {
 
 			page.selector.css('display', 'block');
 			this.currentPage = name;
+
+			if (oldPage) this.hidePage(oldPage.name);
 		},
 
 	/**********************************************************************************
@@ -109,6 +111,9 @@ Package('Sapphire', {
 			var page = this.pages[name];
 			var canShow = true;
 			var passedJSON = JSON.stringify(passed);
+			var oldPage = null;
+			var oldPageSelector = null;
+			var newPage = page;
 
 			this.fire('canShow', name, function(can)
 			{
@@ -122,7 +127,10 @@ Package('Sapphire', {
 				if (this.currentPage == name && passedJSON == this.passedJSON) return;
 
 				if (this.currentPage && this.exclusive)
-					this.hidePage(this.currentPage);
+				{
+					oldPage = this.pages[this.currentPage];
+					oldPageSelector = oldPage.selector
+				}
 
 				this.currentPage = name;
 				this.passedJSON = passedJSON
@@ -136,11 +144,11 @@ Package('Sapphire', {
 
 				if (loaded)
 				{
-					this.fire('load');
+					this.fire('load', page.selector);
 					this.fire('load.' + name);
 				}
 
-				this.showEffect(page.selector, this.afterShowEffect.bind(this, name, passed));
+				this.showEffect(oldPageSelector, page.selector, this.afterShowEffect.bind(this, name, oldPage, passed));
 			}.bind(this));
 		},
 
@@ -168,12 +176,20 @@ Package('Sapphire', {
 		{
 			var page = this.pages[name];
 
+			console.log('after hide effects', name);
+
 			if (!page.prune)
 				page.selector.detach();
 			else
 				page.selector.css('display', 'none');
 		},
 
+
+		setEffects : function(show, hide)
+		{
+			if (show) this.showEffect = show;
+			if (hide) this.hideEffect = hide;
+		},
 	/**********************************************************************************
 		Method: hidePage
 
@@ -190,7 +206,7 @@ Package('Sapphire', {
 			this.fire('hide', name);
 
 			this.hideEffect(this.pages[name], this.afterHideEffect.bind(this, name));
-			this.currentPage = '';
+			//this.currentPage = '';
 		},
 
 	/**********************************************************************************
