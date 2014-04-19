@@ -16,6 +16,7 @@ Package('Sapphire', {
 			this.first = false;
 			SAPPHIRE.application.listenPageEvent('show', '', this.onPageShow.bind(this));
 			SAPPHIRE.application.listen('start', this.onStart.bind(this));
+			SAPPHIRE.application.listen('ready', this.onReady.bind(this));
 		},
 
 		handleFirst : function()
@@ -49,10 +50,15 @@ Package('Sapphire', {
 			return this.parseEvent(this.first);
 		},
 
+		onReady : function()
+		{
+			$.address.change(this.onChange.bind(this));
+			this.handleFirst();
+		},
+
 		onStart : function(callback)
 		{
 			$.address.init(this.onInit.bind(this));
-			$.address.change(this.onChange.bind(this));
 			$.address.autoUpdate(false);
 			callback();
 		},
