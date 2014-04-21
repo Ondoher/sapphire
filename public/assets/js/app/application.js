@@ -235,6 +235,16 @@ Package('Sapphire', {
 
 		listenPanelEvent : function(event, set, which, callback)
 		{
+			if (!set)
+			{
+				var panels = $H(this.panels);
+				panels.each(function(set)
+				{
+					if (which) this.panels[set].listenPageEvent(event, which, callback)
+					else this.panels[set].listenGlobalEvent(event, callback);
+				}, this);
+				return;
+			}
 			if (which) this.panels[set].listenPageEvent(event, which, callback)
 			else this.panels[set].listenGlobalEvent(event, callback);
 		},

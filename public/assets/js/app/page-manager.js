@@ -30,7 +30,7 @@ Package('Sapphire', {
 			this.exclusive = exclusive;
 			this.pages = $({});
 			this.currentPage = undefined;
-			this.showEffect = function (node, callback) {callback()};
+			this.showEffect = function (node, selector, callback) {callback()};
 			this.hideEffect = function (node, callback) {callback()};
 		},
 
@@ -91,9 +91,11 @@ Package('Sapphire', {
 			this.fireArgs('show', passed);
 
 			page.selector.css('display', 'block');
-			this.currentPage = name;
 
-			if (oldPage) this.hidePage(oldPage.name);
+
+			if (oldPage && this.currentPage != name ) this.hidePage(oldPage.name);
+
+			this.currentPage = name;
 		},
 
 	/**********************************************************************************
@@ -124,7 +126,10 @@ Package('Sapphire', {
 			this.loadPage(name, function(loaded)
 			{
 			// Remove the current page if needed
-				if (this.currentPage == name && passedJSON == this.passedJSON) return;
+				if (this.currentPage == name && passedJSON == this.passedJSON)
+				{
+					return;
+				}
 
 				if (this.currentPage && this.exclusive)
 				{
@@ -175,8 +180,6 @@ Package('Sapphire', {
 		afterHideEffect : function(name)
 		{
 			var page = this.pages[name];
-
-			console.log('after hide effects', name);
 
 			if (!page.prune)
 				page.selector.detach();

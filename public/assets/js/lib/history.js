@@ -15,6 +15,7 @@ Package('Sapphire', {
 
 			this.first = false;
 			SAPPHIRE.application.listenPageEvent('show', '', this.onPageShow.bind(this));
+			SAPPHIRE.application.listenPanelEvent('show', '', '', this.onPanelShow.bind(this));
 			SAPPHIRE.application.listen('start', this.onStart.bind(this));
 			SAPPHIRE.application.listen('ready', this.onReady.bind(this));
 		},
@@ -40,8 +41,6 @@ Package('Sapphire', {
 		{
 			var address = this.parseEvent(event);
 
-			console.log('History::handleEvent', address);
-
 			SAPPHIRE.application.showPage(address.page, address.path, address.query);
 		},
 
@@ -52,21 +51,22 @@ Package('Sapphire', {
 
 		onReady : function()
 		{
-			$.address.change(this.onChange.bind(this));
-			this.handleFirst();
+			$.address.autoUpdate(false);
+			$.address.init(this.onInit.bind(this));
 		},
 
 		onStart : function(callback)
 		{
-			$.address.init(this.onInit.bind(this));
-			$.address.autoUpdate(false);
+			this.ignoreChange = true;
 			callback();
 		},
 
 		onInit : function(event)
 		{
+			$.address.change(this.onChange.bind(this));
 			this.first  = event;
 			this.fire('init', event);
+			this.handleFirst();
 		},
 
 		onChange : function(event)
@@ -92,7 +92,19 @@ Package('Sapphire', {
 			$.address.path(path);
 			$.address.queryString(queryStr);
 			$.address.update();
+		},
+
+		onPanelShow : function(name, path, query)
+		{
+			path = (path !== undefined)?path:name;
+
+			this.ignoreChange = true;
+			var queryStr = Object.toQueryString(query);
+			$.address.path(path);
+			$.address.queryString(queryStr);
+			$.address.update();
 		}
+
 	})
 });
 
