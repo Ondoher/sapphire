@@ -92,8 +92,7 @@ Package('Sapphire', {
 
 			page.selector.css('display', 'block');
 
-
-			if (oldPage && this.currentPage != name ) this.hidePage(oldPage.name);
+			if (oldPage && this.currentPage != name) this.hidePage(oldPage.name);
 
 			this.currentPage = name;
 		},
@@ -137,7 +136,7 @@ Package('Sapphire', {
 					oldPageSelector = oldPage.selector
 				}
 
-				this.currentPage = name;
+				//this.currentPage = name;
 				this.passedJSON = passedJSON
 
 			//!Pending: should we increment z-order here?
