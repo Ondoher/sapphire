@@ -30,8 +30,8 @@ Package('Sapphire', {
 			this.exclusive = exclusive;
 			this.pages = $({});
 			this.currentPage = undefined;
-			this.showEffect = function (node, selector, callback) {callback()};
-			this.hideEffect = function (node, callback) {callback()};
+			this.showEffect = function (oldPage, newPage, callback) {callback()};
+			this.hideEffect = function (oldPage, newPage, callback) {callback()};
 		},
 
 	/**********************************************************************************
@@ -79,9 +79,10 @@ Package('Sapphire', {
 			- show
 			- show.<name>
 	*/
-		afterShowEffect : function(name, oldPage, passed)
+		afterShowEffect : function(oldPage, newPage, passed)
 		{
-			var page = this.pages[name];
+			var name = newPage.name;
+			var page = newPage;
 			if (!page.shown)
 				this.fireArgs('firstShow.' + name, passed);
 
@@ -94,7 +95,7 @@ Package('Sapphire', {
 
 			if (oldPage && this.currentPage != name) this.hidePage(oldPage.name);
 
-			this.currentPage = name;
+			this.currentPage = newPage.name;
 		},
 
 	/**********************************************************************************
@@ -152,7 +153,10 @@ Package('Sapphire', {
 					this.fire('load.' + name);
 				}
 
-				this.showEffect(oldPageSelector, page.selector, this.afterShowEffect.bind(this, name, oldPage, passed));
+				this.oldPage = oldPage;
+				this.newPage = newPage;
+
+				this.showEffect(oldPageSelector, page.selector, this.afterShowEffect.bind(this, oldPage, newPage, passed));
 			}.bind(this));
 		},
 
@@ -207,8 +211,7 @@ Package('Sapphire', {
 			this.fire('hide.' + name);
 			this.fire('hide', name);
 
-			this.hideEffect(this.pages[name], this.afterHideEffect.bind(this, name));
-			//this.currentPage = '';
+			this.hideEffect(this.oldPage?this.oldPage.selector:null, this.newPage.selector, this.afterHideEffect.bind(this, name));
 		},
 
 	/**********************************************************************************

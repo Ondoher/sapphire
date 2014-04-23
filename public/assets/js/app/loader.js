@@ -232,6 +232,7 @@ Package('Sapphire', {
 		loadMarkup : function(page, callback)
 		{
 			page.selector = $('<div>').load(page.url, callback);
+			page.selector.attr('id', page.name);
 		}
 	})
 });
