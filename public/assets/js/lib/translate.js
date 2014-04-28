@@ -141,7 +141,6 @@ Package('Sapphire', {
 
 		onLoad : function(type)
 		{
-			console.log('translate::onLoad', type);
 			this.translateDocument();
 		}
 	})
