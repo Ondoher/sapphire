@@ -83,13 +83,6 @@ Package('Sapphire', {
 		{
 			var name = newPage.name;
 			var page = newPage;
-			if (!page.shown)
-				this.fireArgs('firstShow.' + name, passed);
-
-			page.shown = true;
-			this.fireArgs('show.' + name, passed);
-			passed.splice(0, 0, name)
-			this.fireArgs('show', passed);
 
 			page.selector.css('display', 'block');
 
@@ -155,6 +148,14 @@ Package('Sapphire', {
 
 				this.oldPage = oldPage;
 				this.newPage = newPage;
+
+				if (!page.shown)
+					this.fireArgs('firstShow.' + name, passed);
+
+				page.shown = true;
+				this.fireArgs('show.' + name, passed);
+				passed.splice(0, 0, name)
+				this.fireArgs('show', passed);
 
 				this.showEffect(oldPageSelector, page.selector, this.afterShowEffect.bind(this, oldPage, newPage, passed));
 			}.bind(this));
