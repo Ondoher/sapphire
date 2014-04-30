@@ -121,6 +121,17 @@ Package('Sapphire', {
 			this.panels[name].setContainer(selector);
 		},
 
+		resetPanels : function(name)
+		{
+			this.panels[name].reset();
+		},
+
+		firePanelEvent : function(event, name)
+		{
+		 	var passed = Array.prototype.slice.call(arguments, 2);
+			this.panels[name].fireArgs(event, passed);
+		},
+
 	/**********************************************************************************'
 		Method: getCurrentPage
 

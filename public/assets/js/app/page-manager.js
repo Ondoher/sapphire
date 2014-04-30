@@ -86,7 +86,13 @@ Package('Sapphire', {
 
 			page.selector.css('display', 'block');
 
-			if (oldPage && this.currentPage != name) this.hidePage(oldPage.name);
+			if (oldPage && this.currentPage != name) this.hidePage(oldPage.name, name);
+			else
+			{
+			// There is no page to hide, so the animation is over
+				this.fire('postAnimate.' + name);
+				this.fire('postAnimate', name);
+			}
 
 			this.currentPage = newPage.name;
 		},
@@ -154,8 +160,10 @@ Package('Sapphire', {
 
 				page.shown = true;
 				this.fireArgs('show.' + name, passed);
+				this.fireArgs('preAnimate.' + name, passed);
 				passed.splice(0, 0, name)
 				this.fireArgs('show', passed);
+				this.fireArgs('preAnimate', passed);
 
 				this.showEffect(oldPageSelector, page.selector, this.afterShowEffect.bind(this, oldPage, newPage, passed));
 			}.bind(this));
@@ -167,6 +175,22 @@ Package('Sapphire', {
 			this.showPage(name, passed);
 		},
 
+		reset : function()
+		{
+			var name = this.currentPage;
+
+			if (!name) return;
+
+			var page = this.pages[name];
+
+			if (!page.prune)
+				page.selector.detach();
+			else
+				page.selector.css('display', 'none');
+
+			this.currentPage = '';
+		},
+
 	/**********************************************************************************
 		Method: afterHideEffect
 
@@ -176,19 +200,33 @@ Package('Sapphire', {
 
 		Parameters:
 			name        - The name of the page
+			newName     - the name of the new page
 
 		Fires:
 			- onShow
 			- onShow{name}
 	*/
-		afterHideEffect : function(name)
+		afterHideEffect : function(name, newName)
 		{
 			var page = this.pages[name];
+
+			this.fire('hide.' + name);
+			this.fire('hide', name);
 
 			if (!page.prune)
 				page.selector.detach();
 			else
 				page.selector.css('display', 'none');
+
+			this.currentPage = '';
+
+
+		// animation is not complete until the page is hidden
+			if (newName)
+			{
+				this.fire('postAnimate.' + newName);
+				this.fire('postAnimate', name);
+			}
 		},
 
 
@@ -206,13 +244,11 @@ Package('Sapphire', {
 		Parameters:
 			name        - The name of the page
 	*/
-		hidePage : function(name)
+		hidePage : function(name, newPage)
 		{
 			var page = this.pages[name];
-			this.fire('hide.' + name);
-			this.fire('hide', name);
 
-			this.hideEffect(this.oldPage?this.oldPage.selector:null, this.newPage.selector, this.afterHideEffect.bind(this, name));
+			this.hideEffect(this.oldPage?this.oldPage.selector:null, this.newPage.selector, this.afterHideEffect.bind(this, name, newPage));
 		},
 
 	/**********************************************************************************
