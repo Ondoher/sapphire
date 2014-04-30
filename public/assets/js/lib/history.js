@@ -52,21 +52,22 @@ Package('Sapphire', {
 		onReady : function()
 		{
 			$.address.autoUpdate(false);
-			$.address.init(this.onInit.bind(this));
+			$.address.change(this.onChange.bind(this));
+			this.handleFirst();
 		},
 
 		onStart : function(callback)
 		{
 			this.ignoreChange = true;
+			$.address.init(this.onInit.bind(this));
 			callback();
 		},
 
 		onInit : function(event)
 		{
-			$.address.change(this.onChange.bind(this));
 			this.first  = event;
 			this.fire('init', event);
-			this.handleFirst();
+			//this.handleFirst();
 		},
 
 		onChange : function(event)

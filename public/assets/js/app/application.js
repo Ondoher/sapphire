@@ -198,11 +198,13 @@ Package('Sapphire', {
 		checkReady : function()
 		{
 			this.readyWaiting--;
+			console.log('checkReady', this.readyWaiting);
 			if (this.readyWaiting == 0) this.ready();
 		},
 
 		ready : function()
 		{
+			console.log('ready');
 			this.pages.setContainer($('#pages'));
 			this.dialogs.setContainer($('#dialogs'));
 
@@ -226,6 +228,7 @@ Package('Sapphire', {
 			this.started = true;
 
 			this.readyWaiting = this.getEventCount('start');
+			console.log('start: this.readyWaiting');
 			if (this.readyWaiting == 0) this.ready.delay(1, this);
 
 			this.fire('start', this.checkReady.bind(this));

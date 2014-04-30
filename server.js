@@ -44,7 +44,6 @@ if (cluster.isMaster)
 else
 {
 	var http = require('http');
-	var redis = require('redis');
 	var Cookies = require('cookies');
 	var sessions = require('sessions');
 	var sessionRouter = require('sessionRouter');
@@ -65,10 +64,8 @@ else
 	var listenPort = CONFIG.port?CONFIG.port:8088;
 	var socketPort = process.env.socketPort;
 
-	var client = redis.createClient();
 	var server;
 
-	sessions.setDefaultRedisClient(client);
 	process.on('uncaughtException', function(err) {
 		console.error(err.stack);
 		var killTimer = setTimeout(function()
@@ -86,7 +83,7 @@ else
 		.use(Cookies.connect())
 		.use(connect.query())
 		.use(connect.bodyParser())
-		.use(sessionRouter(client))
+		.use(sessionRouter())
 		.use(appPath())
 		.use(staticRouter())
 		.use(serviceRouter())
