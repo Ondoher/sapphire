@@ -68,6 +68,15 @@ Package('Sapphire', {
 				eventList.erase(id);
 		},
 
+	/**********************************************************************************
+		Method: removeAll
+
+		Call this function to remove all listeners for an event
+
+		Parameters:
+			name       - the name of the event
+
+	*/
 		removeAll : function(name)
 		{
 			this.events.set(name, new Hash());

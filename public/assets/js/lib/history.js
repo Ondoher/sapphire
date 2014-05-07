@@ -22,7 +22,7 @@ Package('Sapphire', {
 
 		handleFirst : function()
 		{
-			this.handleEvent(this.first);
+			if (this.first)	this.handleEvent(this.first);
 		},
 
 		parseEvent : function(event)
@@ -59,15 +59,14 @@ Package('Sapphire', {
 		onStart : function(callback)
 		{
 			this.ignoreChange = true;
-			$.address.init(this.onInit.bind(this));
-			callback();
+			$.address.init(this.onInit.bind(this, callback));
 		},
 
-		onInit : function(event)
+		onInit : function(callback, event)
 		{
 			this.first  = event;
 			this.fire('init', event);
-			//this.handleFirst();
+			callback();
 		},
 
 		onChange : function(event)
