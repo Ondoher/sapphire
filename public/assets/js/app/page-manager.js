@@ -92,6 +92,7 @@ Package('Sapphire', {
 			// There is no page to hide, so the animation is over
 				this.fire('postAnimate.' + name);
 				this.fire('postAnimate', name);
+				this.transitioning = false;
 			}
 
 			this.currentPage = newPage.name;
@@ -115,6 +116,9 @@ Package('Sapphire', {
 			var oldPage = null;
 			var oldPageSelector = null;
 			var newPage = page;
+
+			if (this.transitioning) return;
+			this.transitioning = true;
 
 			this.fire('canShow', name, function(can)
 			{
@@ -226,6 +230,7 @@ Package('Sapphire', {
 			{
 				this.fire('postAnimate.' + newName);
 				this.fire('postAnimate', name);
+				this.transitioning = false;
 			}
 		},
 
