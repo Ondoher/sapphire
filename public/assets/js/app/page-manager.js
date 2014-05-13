@@ -118,7 +118,6 @@ Package('Sapphire', {
 			var newPage = page;
 
 			if (this.transitioning) return;
-			this.transitioning = true;
 
 			this.fire('canShow', name, function(can)
 			{
@@ -134,6 +133,7 @@ Package('Sapphire', {
 					return;
 				}
 
+				this.transitioning = true;
 				if (this.currentPage && this.exclusive)
 				{
 					oldPage = this.pages[this.currentPage];
