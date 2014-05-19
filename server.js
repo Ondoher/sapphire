@@ -87,7 +87,7 @@ function workerSetup()
 			process.exit(1);
 		}, 10000);
 
-		server.close();
+		try	{server.close();} catch(err) {}
 		cluster.worker.disconnect();
 	});
 
