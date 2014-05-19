@@ -117,6 +117,8 @@ Package('Sapphire', {
 			var oldPageSelector = null;
 			var newPage = page;
 
+			if (page == undefined) return;
+
 			if (this.transitioning) return;
 
 			this.fire('canShow', name, function(can)
