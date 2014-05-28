@@ -13,19 +13,26 @@ Fires:
 
 Package('Sapphire.Services', {
 	AjaxService : new Class({
-		initializeAjaxService : function()
+		initializeAjaxService : function(useSessionHeader)
 		{
+			this.useSessionHeader = (useSessionHeader === undefined)?false:useSessionHeader;
+			this.sessionId = undefined;
 		},
 
 		call : function(which, data, method, type)
 		{
 			var deferred = Q.defer();
+			var header = {};
+			if (this.sessionId && this.useSessionHeader) header['X-Saphire-Session'] = this.sessionId;
+
 			method = (method=== undefined)?'POST':method;
 			type = (type === 'iframe')?'json':type;
 			type = (type === undefined)?'json':type;
+
 			$.ajax({
 				data: data,
 				dataType: type,
+				headers: header,
 				error: this.onAjaxError.bind(this, deferred),
 				success: this.onAjaxSuccess.bind(this, deferred),
 				type: method,
@@ -35,9 +42,12 @@ Package('Sapphire.Services', {
 			return deferred.promise;
 		},
 
-		onAjaxSuccess : function(deferred, response)
+		onAjaxSuccess : function(deferred, response, status, xhr)
 		{
+
 			deferred.resolve(response);
+			if (xhr.getResponseHeader('X-Saphire-Session'))
+				this.sessionId = xhr.getResponseHeader('X-Saphire-Session');
 			this.fire('ajaxResponse', response);
 		},
 
