@@ -138,10 +138,14 @@ Package('Sapphire', {
 				this.transitioning = true;
 				if (this.currentPage && this.exclusive)
 				{
+					$(document.body).removeClass(this.currentPage);
+
 					oldPage = this.pages[this.currentPage];
 					oldPageSelector = oldPage.selector
 				}
 
+				if (this.exclusive)
+					$(document.body).addClass(name);
 				//this.currentPage = name;
 				this.passedJSON = passedJSON
 
