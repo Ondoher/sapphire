@@ -23,7 +23,7 @@ Package('Sapphire.Services', {
 		{
 			var deferred = Q.defer();
 			var header = {};
-			if (this.sessionId && this.useSessionHeader) header['X-Saphire-Session'] = this.sessionId;
+			if (this.sessionId && this.useSessionHeader) header['X-Sapphire-Session'] = this.sessionId;
 
 			method = (method=== undefined)?'POST':method;
 			type = (type === 'iframe')?'json':type;
@@ -46,8 +46,8 @@ Package('Sapphire.Services', {
 		{
 
 			deferred.resolve(response);
-			if (xhr.getResponseHeader('X-Saphire-Session'))
-				this.sessionId = xhr.getResponseHeader('X-Saphire-Session');
+			if (xhr.getResponseHeader('X-Sapphire-Session'))
+				this.sessionId = xhr.getResponseHeader('X-Sapphire-Session');
 			this.fire('ajaxResponse', response);
 		},
 
