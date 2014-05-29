@@ -26,6 +26,8 @@ Package('Sapphire.Services', {
 			if (this.sessionId && this.useSessionHeader) header['X-Sapphire-Session'] = this.sessionId;
 
 			method = (method=== undefined)?'POST':method;
+			method = (SAPPHIRE.forceMethod !== false)?SAPPHIRE.forceMethod:method;
+
 			type = (type === 'iframe')?'json':type;
 			type = (type === undefined)?'json':type;
 
