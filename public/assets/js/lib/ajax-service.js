@@ -17,13 +17,19 @@ Package('Sapphire.Services', {
 		{
 			this.useSessionHeader = (useSessionHeader === undefined)?false:useSessionHeader;
 			this.sessionId = undefined;
+			this.headers = {};
+		},
+
+		addHeader : function(key, value)
+		{
+			this.headers[key] = value;
 		},
 
 		call : function(which, data, method, type)
 		{
 			var deferred = Q.defer();
-			var header = {};
-			if (this.sessionId && this.useSessionHeader) header['X-Sapphire-Session'] = this.sessionId;
+			var headers = this.headers;
+			if (this.sessionId && this.useSessionHeader) this.headers['X-Sapphire-Session'] = this.sessionId;
 
 			method = (method=== undefined)?'POST':method;
 			method = (SAPPHIRE.forceMethod !== false)?SAPPHIRE.forceMethod:method;
@@ -34,7 +40,7 @@ Package('Sapphire.Services', {
 			$.ajax({
 				data: data,
 				dataType: type,
-				headers: header,
+				headers: headers,
 				error: this.onAjaxError.bind(this, deferred),
 				success: this.onAjaxSuccess.bind(this, deferred),
 				type: method,
