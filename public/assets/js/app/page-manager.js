@@ -90,8 +90,8 @@ Package('Sapphire', {
 			else
 			{
 			// There is no page to hide, so the animation is over
-				this.fire('postAnimate.' + name);
-				this.fire('postAnimate', name);
+				this.fire('postAnimate.' + name, newPage.selector);
+				this.fire('postAnimate', name, newPage.selector);
 				this.transitioning = false;
 			}
 
@@ -219,6 +219,7 @@ Package('Sapphire', {
 		afterHideEffect : function(name, newName)
 		{
 			var page = this.pages[name];
+			var newPage = this.pages[newName];
 
 			this.fire('hide.' + name);
 			this.fire('hide', name);
@@ -234,8 +235,8 @@ Package('Sapphire', {
 		// animation is not complete until the page is hidden
 			if (newName)
 			{
-				this.fire('postAnimate.' + newName);
-				this.fire('postAnimate', name);
+				this.fire('postAnimate.' + newName, newPage.selector);
+				this.fire('postAnimate', newName, newPage.selector);
 				this.transitioning = false;
 			}
 		},
