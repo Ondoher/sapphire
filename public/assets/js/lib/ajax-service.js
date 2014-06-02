@@ -25,17 +25,18 @@ Package('Sapphire.Services', {
 			this.headers[key] = value;
 		},
 
-		call : function(which, data, method, type)
+		call : function(which, data, method, headers)
 		{
+			headers = (headers === undefined)?{}:headers;
+
 			var deferred = Q.defer();
-			var headers = this.headers;
+			var headers = Object.merge(this.headers, headers);
+			var type = 'json';
+
 			if (this.sessionId && this.useSessionHeader) this.headers['X-Sapphire-Session'] = this.sessionId;
 
 			method = (method=== undefined)?'POST':method;
 			method = (SAPPHIRE.forceMethod !== false)?SAPPHIRE.forceMethod:method;
-
-			type = (type === 'iframe')?'json':type;
-			type = (type === undefined)?'json':type;
 
 			$.ajax({
 				data: data,
