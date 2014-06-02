@@ -127,6 +127,15 @@ Package('Sapphire', {
 			}.bind(this));
 			if (!canShow) return;
 
+			this.fireArgs('preShow.' + name);
+			this.fireArgs('preShow', name);
+
+			if (this.currentPage)
+			{
+				this.fireArgs('preHide.' + this.currentPage);
+				this.fireArgs('preHide', this.currentPage);
+			}
+
 			this.loadPage(name, function(loaded)
 			{
 			// Remove the current page if needed
@@ -169,6 +178,7 @@ Package('Sapphire', {
 					this.fireArgs('firstShow.' + name, passed);
 
 				page.shown = true;
+
 				this.fireArgs('show.' + name, passed);
 				this.fireArgs('preAnimate.' + name, passed);
 				passed.splice(0, 0, name)
