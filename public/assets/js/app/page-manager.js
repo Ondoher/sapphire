@@ -127,21 +127,21 @@ Package('Sapphire', {
 			}.bind(this));
 			if (!canShow) return;
 
-			this.fireArgs('preShow.' + name);
-			this.fireArgs('preShow', name);
-
-			if (this.currentPage)
-			{
-				this.fireArgs('preHide.' + this.currentPage);
-				this.fireArgs('preHide', this.currentPage);
-			}
-
 			this.loadPage(name, function(loaded)
 			{
 			// Remove the current page if needed
 				if (this.currentPage == name && passedJSON == this.passedJSON)
 				{
 					return;
+				}
+
+				this.fireArgs('preShow.' + name);
+				this.fireArgs('preShow', name);
+
+				if (this.currentPage)
+				{
+					this.fireArgs('preHide.' + this.currentPage);
+					this.fireArgs('preHide', this.currentPage);
 				}
 
 				this.transitioning = true;
