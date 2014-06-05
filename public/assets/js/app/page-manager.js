@@ -203,6 +203,9 @@ Package('Sapphire', {
 
 			var page = this.pages[name];
 
+			this.fire('hide.' + name);
+			this.fire('hide', name);
+
 			if (!page.prune)
 				page.selector.detach();
 			else
