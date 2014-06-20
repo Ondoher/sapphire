@@ -102,6 +102,7 @@ function workerSetup()
 		.use(staticRouter())
 		.use(serviceRouter())
 		.use(appRouter())
+		.use(notFound())
 	).listen(listenPort);
 
 	server.listen(listenPort);
