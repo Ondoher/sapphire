@@ -25,6 +25,11 @@ Package('Sapphire.Services', {
 			this.headers[key] = value;
 		},
 
+		setTimeout : function(timeout)
+		{
+			this.timeout = timeout;
+		},
+
 		call : function(which, data, method, headers)
 		{
 			headers = (headers === undefined)?{}:headers;
@@ -45,7 +50,8 @@ Package('Sapphire.Services', {
 				error: this.onAjaxError.bind(this, deferred),
 				success: this.onAjaxSuccess.bind(this, deferred),
 				type: method,
-				url: which
+				url: which,
+				timeout : this.timeout
 			});
 
 			return deferred.promise;
