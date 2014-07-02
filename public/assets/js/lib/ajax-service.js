@@ -35,7 +35,7 @@ Package('Sapphire.Services', {
 			headers = (headers === undefined)?{}:headers;
 
 			var deferred = Q.defer();
-			var headers = Object.merge(this.headers, headers);
+			var headers = Object.merge({}, this.headers, headers);
 			var type = 'json';
 
 			if (this.sessionId && this.useSessionHeader) this.headers['X-Sapphire-Session'] = this.sessionId;
