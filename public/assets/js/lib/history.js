@@ -18,7 +18,6 @@ Package('Sapphire', {
 			SAPPHIRE.application.listenPanelEvent('show', '', '', this.onPanelShow.bind(this));
 			SAPPHIRE.application.listen('ready', this.onReady.bind(this));
 
-			console.log(window[SAPPHIRE.ns].realPath);
 			if (window[SAPPHIRE.ns].realPath)
 				$.address.state(window[SAPPHIRE.ns].realPath).init(this.onInit.bind(this)).change(this.onChange.bind(this));
 			else
@@ -46,7 +45,6 @@ Package('Sapphire', {
 		handleEvent : function(event)
 		{
 			var address = this.parseEvent(event);
-			console.log('handleEvent', event, address);
 
 			this.ignoreChange = true;
 			SAPPHIRE.application.showPage(address.page, address.path, address.query);
@@ -69,17 +67,16 @@ Package('Sapphire', {
 
 		onChange : function(event)
 		{
-			console.log('change', event);
 			if (this.first)
 			{
-				console.log('first', event);
 				this.fire('init', event);
 				return;
 			}
 
+			if (this.first) this.first = false;
+
 			if (this.ignoreChange)
 			{
-				console.log('ignore change');
 				this.ignoreChange = false;
 				return;
 			}
@@ -87,7 +84,6 @@ Package('Sapphire', {
 
 			this.fire('change', event, this.first != false);
 			this.fire('externalChange', this.first != false);
-			if (this.first) this.first = false;
 			this.internalChange = true;
 			this.handleEvent(event);
 
@@ -95,18 +91,22 @@ Package('Sapphire', {
 
 		onPageShow : function(name, path, query)
 		{
+
 			path = (path !== undefined)?path:name;
 
 			if (!this.internalChange)
 				this.fire('internalChange', this.first != false);
 
-			if (this.first) return;
+			if (this.first)
+			{
+				this.first = false;
+//				return;
+			}
 
 			var queryStr = Object.toQueryString(query);
 
 			if (!this.ignoreChange)
 			{
-				console.log('update path');
 				$.address.path(path);
 				$.address.queryString(queryStr);
 				$.address.update();
@@ -120,8 +120,13 @@ Package('Sapphire', {
 		{
 			path = (path !== undefined)?path:name;
 
-			this.ignoreChange = true;
+			if (!this.internalChange)
+				this.fire('internalChange', this.first != false);
+
+			if (this.first) return;
+
 			var queryStr = Object.toQueryString(query);
+
 			if (!this.ignoreChange)
 			{
 				$.address.path(path);
