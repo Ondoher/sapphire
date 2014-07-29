@@ -25,15 +25,19 @@ Package('Sapphire.Services', {
 			this.headers[key] = value;
 		},
 
+		setTimeout : function(timeout)
+		{
+			this.timeout = timeout;
+		},
+
 		call : function(which, data, method, headers)
 		{
 			headers = (headers === undefined)?{}:headers;
+			if (this.sessionId && this.useSessionHeader) this.headers['X-Sapphire-Session'] = this.sessionId;
 
 			var deferred = Q.defer();
-			var headers = Object.merge(this.headers, headers);
+			var headers = Object.merge({}, this.headers, headers);
 			var type = 'json';
-
-			if (this.sessionId && this.useSessionHeader) this.headers['X-Sapphire-Session'] = this.sessionId;
 
 			method = (method=== undefined)?'POST':method;
 			method = (SAPPHIRE.forceMethod !== false)?SAPPHIRE.forceMethod:method;
@@ -45,7 +49,8 @@ Package('Sapphire.Services', {
 				error: this.onAjaxError.bind(this, deferred),
 				success: this.onAjaxSuccess.bind(this, deferred),
 				type: method,
-				url: which
+				url: which,
+				timeout : this.timeout
 			});
 
 			return deferred.promise;
@@ -53,7 +58,6 @@ Package('Sapphire.Services', {
 
 		onAjaxSuccess : function(deferred, response, status, xhr)
 		{
-
 			deferred.resolve(response);
 			if (xhr.getResponseHeader('X-Sapphire-Session'))
 				this.sessionId = xhr.getResponseHeader('X-Sapphire-Session');

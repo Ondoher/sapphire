@@ -79,15 +79,21 @@ Package('Sapphire', {
 			this.ignoreChange = false;
 
 			this.fire('change', event, this.first != false);
+			this.fire('externalChange', this.first != false);
 			if (this.first) this.first = false;
+			this.internalChange = true;
 			this.handleEvent(event);
+
 		},
 
 		onPageShow : function(name, path, query)
 		{
 			path = (path !== undefined)?path:name;
 
+			if (!this.internalChange)
+				this.fire('internalChange', this.first != false);
 			this.ignoreChange = true;
+			this.internalChange = false;
 			var queryStr = Object.toQueryString(query);
 			$.address.path(path);
 			$.address.queryString(queryStr);
