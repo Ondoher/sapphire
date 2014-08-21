@@ -16,13 +16,18 @@ Package('Sapphire', {
 			this.first = false;
 			SAPPHIRE.application.listenPageEvent('show', '', this.onPageShow.bind(this));
 			SAPPHIRE.application.listenPanelEvent('show', '', '', this.onPanelShow.bind(this));
-			SAPPHIRE.application.listen('start', this.onStart.bind(this));
 			SAPPHIRE.application.listen('ready', this.onReady.bind(this));
+
+			if (window[SAPPHIRE.ns].realPath)
+				$.address.state(window[SAPPHIRE.ns].realPath).init(this.onInit.bind(this)).change(this.onChange.bind(this));
+			else
+				$.address.init(this.onInit.bind(this)).change(this.onChange.bind(this));
 		},
 
 		handleFirst : function()
 		{
 			if (this.first)	this.handleEvent(this.first);
+			this.first = false;
 		},
 
 		parseEvent : function(event)
@@ -41,6 +46,7 @@ Package('Sapphire', {
 		{
 			var address = this.parseEvent(event);
 
+			this.ignoreChange = true;
 			SAPPHIRE.application.showPage(address.page, address.path, address.query);
 		},
 
@@ -51,26 +57,24 @@ Package('Sapphire', {
 
 		onReady : function()
 		{
+		},
+
+		onInit : function(event)
+		{
+			this.first = event;
 			$.address.autoUpdate(false);
-			$.address.change(this.onChange.bind(this));
-			this.handleFirst();
-		},
-
-		onStart : function(callback)
-		{
-			this.ignoreChange = true;
-			$.address.init(this.onInit.bind(this, callback));
-		},
-
-		onInit : function(callback, event)
-		{
-			this.first  = event;
-			this.fire('init', event);
-			callback();
 		},
 
 		onChange : function(event)
 		{
+			if (this.first)
+			{
+				this.fire('init', event);
+				return;
+			}
+
+			if (this.first) this.first = false;
+
 			if (this.ignoreChange)
 			{
 				this.ignoreChange = false;
@@ -79,30 +83,59 @@ Package('Sapphire', {
 			this.ignoreChange = false;
 
 			this.fire('change', event, this.first != false);
-			if (this.first) this.first = false;
+			this.fire('externalChange', this.first != false);
+			this.internalChange = true;
 			this.handleEvent(event);
+
 		},
 
 		onPageShow : function(name, path, query)
 		{
+
 			path = (path !== undefined)?path:name;
 
-			this.ignoreChange = true;
+			if (!this.internalChange)
+				this.fire('internalChange', this.first != false);
+
+			if (this.first)
+			{
+				this.first = false;
+//				return;
+			}
+
 			var queryStr = Object.toQueryString(query);
-			$.address.path(path);
-			$.address.queryString(queryStr);
-			$.address.update();
+
+			if (!this.ignoreChange)
+			{
+				$.address.path(path);
+				$.address.queryString(queryStr);
+				$.address.update();
+			}
+
+			this.internalChange = false;
+			this.ignoreChange = false;
 		},
 
 		onPanelShow : function(name, path, query)
 		{
 			path = (path !== undefined)?path:name;
 
-			this.ignoreChange = true;
+			if (!this.internalChange)
+				this.fire('internalChange', this.first != false);
+
+			if (this.first) return;
+
 			var queryStr = Object.toQueryString(query);
-			$.address.path(path);
-			$.address.queryString(queryStr);
-			$.address.update();
+
+			if (!this.ignoreChange)
+			{
+				$.address.path(path);
+				$.address.queryString(queryStr);
+				$.address.update();
+			}
+
+			this.internalChange = false;
+			this.ignoreChange = false;
 		}
 
 	})
