@@ -63,6 +63,7 @@ function workerSetup()
 	var notFound = require('notFound');
 	var staticRouter = require('staticRouter');
 	var sessions = require('sessions');
+	var preprocess = require('preprocess');
 	var appPath = require('appPath');
 	var appRouter = require('appRouter');
 	var serviceRouter = require('serviceRouter');
@@ -98,6 +99,7 @@ function workerSetup()
 		.use(connect.query())
 		.use(connect.bodyParser())
 		.use(sessionRouter())
+		.use(preprocess())
 		.use(appPath())
 		.use(staticRouter())
 		.use(serviceRouter())
