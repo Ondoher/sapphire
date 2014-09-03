@@ -73,7 +73,7 @@ function workerSetup()
 
 // !NOTE: make this configurable, so that it can be turned off in prod
 	Q.longStackSupport = true;
-	Q.longStackSupport = false;
+//	Q.longStackSupport = false;
 
 	var listenPort = CONFIG.port?CONFIG.port:8088;
 	var socketPort = process.env.socketPort;
