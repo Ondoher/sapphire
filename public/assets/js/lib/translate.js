@@ -15,14 +15,6 @@ Package('Sapphire', {
 	*/
 		initialize : function()
 		{
-			this.globals = window.replacements?window.replacements:{};
-			this.translations = window.translations?$H(window.translations):$H({});
-
-			var qs = window.location.search.slice(window.location.search.indexOf('?') + 1).parseQueryString(true, true);
-
-			this.marklar = qs.marklar;
-
-			this.translateReplacements.delay(1, this);
 			SAPPHIRE.application.listen('start', this.onStart.bind(this));
 			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this, 'page'));
 			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this, 'dialog'));
@@ -31,6 +23,12 @@ Package('Sapphire', {
 
 		onStart : function(finish)
 		{
+			this.globals = window.replacements?window.replacements:{};
+			this.translations = window.translations?$H(window.translations):$H({});
+			var qs = window.location.search.slice(window.location.search.indexOf('?') + 1).parseQueryString(true, true);
+			this.marklar = qs.marklar;
+
+			this.translateReplacements();
 			this.translateDocument();
 			SAPPHIRE.application.panels.each(function(panel, name)
 			{
@@ -145,7 +143,6 @@ Package('Sapphire', {
 		}
 	})
 });
-
 
 SAPPHIRE.translate = new Sapphire.Translate();
 
