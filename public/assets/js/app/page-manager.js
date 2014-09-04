@@ -292,7 +292,7 @@ Package('Sapphire', {
 			if (name)
 			{
 				var page = this.pages[name];
-				if (page.loaded)
+				if (page && page.loaded)
 				{
 					this.fire('load.' + name);
 				}
