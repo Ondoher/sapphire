@@ -38,6 +38,8 @@ Package('Sapphire.Services', {
 			var deferred = Q.defer();
 			var headers = Object.merge({}, this.headers, headers);
 			var type = 'json';
+			var xssCode = Cookie.read('sapphire-xss');
+			if (xssCode) data.xssCode = xssCode;
 
 			method = (method=== undefined)?'POST':method;
 			method = (SAPPHIRE.forceMethod !== false)?SAPPHIRE.forceMethod:method;
