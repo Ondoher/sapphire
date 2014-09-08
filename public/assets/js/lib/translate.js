@@ -19,6 +19,9 @@ Package('Sapphire', {
 			SAPPHIRE.application.listen('init', this.onInit.bind(this));
 			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this, 'page'));
 			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this, 'dialog'));
+
+			this.started = false;
+			this.waiting = [];
 		},
 
 		translateReplacements : function()
@@ -40,8 +43,16 @@ Package('Sapphire', {
 			var qs = window.location.search.slice(window.location.search.indexOf('?') + 1).parseQueryString(true, true);
 			this.marklar = qs.marklar;
 
+			this.started = true;
+
 			this.translateReplacements();
 			this.translateDocument();
+			this.waiting.each(function(selector)
+			{
+				this.translateSelector(selector);
+			}, this);
+
+			this.waiting = [];
 		},
 
 	/**********************************************************************************
@@ -93,33 +104,33 @@ Package('Sapphire', {
 			return text.substitute(replacements);
 		},
 
-	/**********************************************************************************
-		Method: translateDocument
 
-		Call this to translate the entire document. It does this by finding every element
+	/**********************************************************************************
+		Method: translateSelector
+
+		Call this to translate a specific branch of the dom . It does this by finding every element
 		with the class 'translate' and runs the innerHTML of that element through
 		translateText. The class 'translate' is removed from those elements
 	*/
-		translateDocument : function()
+		translateSelector : function(selector)
 		{
-			$('.translate').each(function(idx, element)
+			selector.find('.translate').each(function(idx, element)
 			{
 				element = $(element);
 				var xlat = this.translateText(element.html());
 				element.html(xlat);
 			}.bind(this));
 
-			$('.translate').removeClass('translate');
+			selector.find('.translate').removeClass('translate');
 
-
-			$('[title]').each(function(idx, element)
+			selector.find('[title]').each(function(idx, element)
 			{
 				element = $(element);
 				var xlat = this.translateText(element.attr('title'));
 				element.attr('title', xlat);
 			}.bind(this));
 
-			$('[placeholder]').each(function(idx, element)
+			selector.find('[placeholder]').each(function(idx, element)
 			{
 				element = $(element);
 				try
@@ -129,6 +140,19 @@ Package('Sapphire', {
 				}
 				catch(e){};
 			}.bind(this));
+		},
+
+
+	/**********************************************************************************
+		Method: translateDocument
+
+		Call this to translate the entire document. It does this by finding every element
+		with the class 'translate' and runs the innerHTML of that element through
+		translateText. The class 'translate' is removed from those elements
+	*/
+		translateDocument : function()
+		{
+			this.translateSelector($(document.body));
 		},
 
 		onInit : function()
@@ -149,7 +173,8 @@ Package('Sapphire', {
 
 		onLoad : function(type, selector)
 		{
-			this.translateDocument();
+			if (!this.started) this.waiting.push(selector);
+			else this.translateSelector(selector);
 		}
 	})
 });
