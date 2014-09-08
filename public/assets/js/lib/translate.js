@@ -16,26 +16,9 @@ Package('Sapphire', {
 		initialize : function()
 		{
 			SAPPHIRE.application.listen('start', this.onStart.bind(this));
+			SAPPHIRE.application.listen('init', this.onInit.bind(this));
 			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this, 'page'));
 			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this, 'dialog'));
-		},
-
-
-		onStart : function(finish)
-		{
-			this.globals = window.replacements?window.replacements:{};
-			this.translations = window.translations?$H(window.translations):$H({});
-			var qs = window.location.search.slice(window.location.search.indexOf('?') + 1).parseQueryString(true, true);
-			this.marklar = qs.marklar;
-
-			this.translateReplacements();
-			this.translateDocument();
-			SAPPHIRE.application.panels.each(function(panel, name)
-			{
-				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this, 'panel'));
-			}, this);
-
-			finish();
 		},
 
 		translateReplacements : function()
@@ -48,6 +31,17 @@ Package('Sapphire', {
 					if (this.globals.has(which)) this.globals.set(which, _T(this.globals.get(which)));
 				}, this);
 			}
+		},
+
+		start : function()
+		{
+			this.globals = window.replacements?window.replacements:{};
+			this.translations = window.translations?$H(window.translations):$H({});
+			var qs = window.location.search.slice(window.location.search.indexOf('?') + 1).parseQueryString(true, true);
+			this.marklar = qs.marklar;
+
+			this.translateReplacements();
+			this.translateDocument();
 		},
 
 	/**********************************************************************************
@@ -137,7 +131,23 @@ Package('Sapphire', {
 			}.bind(this));
 		},
 
-		onLoad : function(type)
+		onInit : function()
+		{
+			SAPPHIRE.application.panels.each(function(panel, name)
+			{
+				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this, 'panel'));
+			}, this);
+		},
+
+		onStart : function(finish)
+		{
+			if (!window[SAPPHIRE.ns].translateStartExplicit)
+				this.start();
+
+			finish();
+		},
+
+		onLoad : function(type, selector)
 		{
 			this.translateDocument();
 		}

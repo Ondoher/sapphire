@@ -225,6 +225,8 @@ Package('Sapphire', {
 			if (this.started) return;
 			this.started = true;
 
+			this.fire('init');
+
 			this.readyWaiting = this.getEventCount('start');
 			if (this.readyWaiting == 0) this.ready.delay(1, this);
 
