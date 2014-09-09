@@ -52,6 +52,14 @@ Package('Sapphire', {
 				this.translateSelector(selector);
 			}, this);
 
+			if (SAPPHIRE.templates)
+			{
+				SAPPHIRE.templates.iterate(function(template)
+				{
+					this.translateSelector(template)
+				}, this);
+			}
+
 			this.waiting = [];
 		},
 
@@ -93,6 +101,7 @@ Package('Sapphire', {
 		{
 			text = (text)?text:'';
 			replacements = (replacements === undefined)?{}:replacements;
+			replacements = Object.merge({}, this.globals, replacements);
 
 			text = this.lookup(text);
 
