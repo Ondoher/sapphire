@@ -256,8 +256,12 @@ Package('Sapphire', {
 				}, this);
 				return;
 			}
-			if (which) this.panels[set].listenPageEvent(event, which, callback)
-			else this.panels[set].listenGlobalEvent(event, callback);
+
+			if(this.panels[set])
+			{
+				if (which) this.panels[set].listenPageEvent(event, which, callback)
+				else this.panels[set].listenGlobalEvent(event, callback);
+			}
 		},
 
 	/**********************************************************************************'
