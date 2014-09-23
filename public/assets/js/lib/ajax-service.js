@@ -30,7 +30,7 @@ Package('Sapphire.Services', {
 			this.timeout = timeout;
 		},
 
-		call : function(which, data, method, headers)
+		call : function(which, data, method, headers, contentType)
 		{
 			headers = (headers === undefined)?{}:headers;
 			if (this.sessionId && this.useSessionHeader) this.headers['X-Sapphire-Session'] = this.sessionId;
@@ -47,6 +47,7 @@ Package('Sapphire.Services', {
 			$.ajax({
 				data: data,
 				dataType: type,
+				contentType: contentType?contentType:undefined,
 				headers: headers,
 				error: this.onAjaxError.bind(this, deferred),
 				success: this.onAjaxSuccess.bind(this, deferred),
