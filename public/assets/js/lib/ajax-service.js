@@ -70,7 +70,7 @@ Package('Sapphire.Services', {
 		onAjaxError : function(deferred, jqXHR, textStatus, errorThrown)
 		{
 			console.log('ajaxError', jqXHR, textStatus, errorThrown);
-			deferred.reject(errorThrown);
+			deferred.reject(jqXHR);
 			this.fire('ajaxError', jqXHR, textStatus, errorThrown);
 		}
 	})
