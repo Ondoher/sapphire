@@ -14,11 +14,11 @@ global.logger = CONFIG.logger?require(CONFIG.logger):require('consoleLogger');
 
 logger.configNode();
 logger.open(processes);
-logger.info("Initialized configs and logconfigs, starting the node.js server, worker count: " + processes);
+logger.info(undefined, "Initialized configs and logconfigs, starting the node.js server, worker count: " + processes);
 
 process.on('exit', function()
 {
-	logger.info('pid', process.pid, 'master', cluster.isMaster, 'exiting...');
+	logger.info(undefined, 'pid', process.pid, 'master', cluster.isMaster, 'exiting...');
 });
 
 function masterSetup()
@@ -26,7 +26,7 @@ function masterSetup()
 
 	var workers = $H({});
 	var baseSocketPort = CONFIG.baseSocketPort;
-	logger.info("Setting up the Master and forking workers : " + processes);
+	logger.info(undefined, "Setting up the Master and forking workers : " + processes);
 
 	for (var idx = 0; idx < processes; idx++)
 	{
@@ -36,7 +36,7 @@ function masterSetup()
 
 	cluster.on('disconnect', function(worker)
 	{
-		logger.error('Worker died/disconnected');
+		logger.error(undefined, 'Worker died/disconnected');
 		var workerItem = workers.get(worker.id);
 		var port = workerItem.port;
 
@@ -47,13 +47,13 @@ function masterSetup()
 
 	process.on('uncaughtException', function(err)
 	{
-		logger.error('Master Exception: \n' + err.stack);
+		logger.error(undefined, 'Master Exception: \n' + err.stack);
 	});
 }
 
 function workerSetup()
 {
-	logger.info("Setting up the Worker: pid: " + process.pid);
+	logger.info(undefined, "Setting up the Worker: pid: " + process.pid);
 
 	var http = require('http');
 	var Cookies = require('cookies');
@@ -82,7 +82,7 @@ function workerSetup()
 
 	process.on('uncaughtException', function(err)
 	{
-		logger.error('Worker Exception: \n' + err.stack);
+		logger.error(undefined, 'Worker Exception: \n' + err.stack);
 
 		var killTimer = setTimeout(function()
 		{
@@ -109,14 +109,14 @@ function workerSetup()
 
 	server.listen(listenPort);
 //	  console.info(process.pid, 'Server running at http://127.0.0.1:' + listenPort + '/');
-	logger.info(process.pid + ' Server running at http://127.0.0.1:' + listenPort + '/');
+	logger.info(undefined, process.pid + ' Server running at http://127.0.0.1:' + listenPort + '/');
 
 	if (CONFIG.baseSocketPort)
 	{
 		io = require('socket.io').listen(server);
 		io.set('log level', 0);
 		socketRouter.listen(socketPort);
-		logger.info(process.pid +  'Socket server running at http://127.0.0.1:' + socketPort);
+		logger.info(undefined, process.pid +  'Socket server running at http://127.0.0.1:' + socketPort);
 	}
 }
 
