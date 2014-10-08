@@ -30,6 +30,11 @@ Package('Sapphire', {
 				return null;
 		},
 
+		iterate : function(callback, obj)
+		{
+			this.templates.each(callback, obj);
+		},
+
 		onStart : function(callback)
 		{
 			this.grab();

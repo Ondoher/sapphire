@@ -33,6 +33,7 @@ Package('Sapphire.Services', {
 		call : function(which, data, method, headers, contentType)
 		{
 			headers = (headers === undefined)?{}:headers;
+			data = (data === undefined)?{}:data;
 			if (this.sessionId && this.useSessionHeader) this.headers['X-Sapphire-Session'] = this.sessionId;
 
 			var deferred = Q.defer();

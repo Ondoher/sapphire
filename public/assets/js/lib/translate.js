@@ -15,29 +15,13 @@ Package('Sapphire', {
 	*/
 		initialize : function()
 		{
-			this.globals = window.replacements?window.replacements:{};
-			this.translations = window.translations?$H(window.translations):$H({});
-
-			var qs = window.location.search.slice(window.location.search.indexOf('?') + 1).parseQueryString(true, true);
-
-			this.marklar = qs.marklar;
-
-			this.translateReplacements.delay(1, this);
 			SAPPHIRE.application.listen('start', this.onStart.bind(this));
+			SAPPHIRE.application.listen('init', this.onInit.bind(this));
 			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this, 'page'));
 			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this, 'dialog'));
-		},
 
-
-		onStart : function(finish)
-		{
-			this.translateDocument();
-			SAPPHIRE.application.panels.each(function(panel, name)
-			{
-				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this, 'panel'));
-			}, this);
-
-			finish();
+			this.started = false;
+			this.waiting = [];
 		},
 
 		translateReplacements : function()
@@ -50,6 +34,39 @@ Package('Sapphire', {
 					if (this.globals.has(which)) this.globals.set(which, _T(this.globals.get(which)));
 				}, this);
 			}
+		},
+
+		start : function()
+		{
+			console.log('start');
+			this.globals = window.replacements?window.replacements:{};
+			this.translations = window.translations?$H(window.translations):$H({});
+			var qs = window.location.search.slice(window.location.search.indexOf('?') + 1).parseQueryString(true, true);
+			this.marklar = qs.marklar;
+
+			this.started = true;
+
+			this.translateReplacements();
+			this.translateDocument();
+			this.waiting.each(function(selector)
+			{
+				this.translateSelector(selector);
+			}, this);
+
+			if (SAPPHIRE.templates)
+			{
+				SAPPHIRE.templates.iterate(function(template)
+				{
+					this.translateSelector(template)
+				}, this);
+			}
+
+			SAPPHIRE.application.panels.each(function(panel, name)
+			{
+				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this, 'panel'));
+			}, this);
+
+			this.waiting = [];
 		},
 
 	/**********************************************************************************
@@ -90,6 +107,7 @@ Package('Sapphire', {
 		{
 			text = (text)?text:'';
 			replacements = (replacements === undefined)?{}:replacements;
+			replacements = Object.merge({}, this.globals, replacements);
 
 			text = this.lookup(text);
 
@@ -101,33 +119,33 @@ Package('Sapphire', {
 			return text.substitute(replacements);
 		},
 
-	/**********************************************************************************
-		Method: translateDocument
 
-		Call this to translate the entire document. It does this by finding every element
+	/**********************************************************************************
+		Method: translateSelector
+
+		Call this to translate a specific branch of the dom . It does this by finding every element
 		with the class 'translate' and runs the innerHTML of that element through
 		translateText. The class 'translate' is removed from those elements
 	*/
-		translateDocument : function()
+		translateSelector : function(selector)
 		{
-			$('.translate').each(function(idx, element)
+			selector.find('.translate').each(function(idx, element)
 			{
 				element = $(element);
 				var xlat = this.translateText(element.html());
 				element.html(xlat);
 			}.bind(this));
 
-			$('.translate').removeClass('translate');
+			selector.find('.translate').removeClass('translate');
 
-
-			$('[title]').each(function(idx, element)
+			selector.find('[title]').each(function(idx, element)
 			{
 				element = $(element);
 				var xlat = this.translateText(element.attr('title'));
 				element.attr('title', xlat);
 			}.bind(this));
 
-			$('[placeholder]').each(function(idx, element)
+			selector.find('[placeholder]').each(function(idx, element)
 			{
 				element = $(element);
 				try
@@ -139,13 +157,42 @@ Package('Sapphire', {
 			}.bind(this));
 		},
 
-		onLoad : function(type)
+
+	/**********************************************************************************
+		Method: translateDocument
+
+		Call this to translate the entire document. It does this by finding every element
+		with the class 'translate' and runs the innerHTML of that element through
+		translateText. The class 'translate' is removed from those elements
+	*/
+		translateDocument : function()
 		{
-			this.translateDocument();
+			this.translateSelector($(document.body));
+		},
+
+		onInit : function()
+		{
+			SAPPHIRE.application.panels.each(function(panel, name)
+			{
+				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this, 'panel'));
+			}, this);
+		},
+
+		onStart : function(finish)
+		{
+			if (!window[SAPPHIRE.ns].translateStartExplicit)
+				this.start();
+
+			finish();
+		},
+
+		onLoad : function(type, selector)
+		{
+			if (!this.started) this.waiting.push(selector);
+			else this.translateSelector(selector);
 		}
 	})
 });
-
 
 SAPPHIRE.translate = new Sapphire.Translate();
 
