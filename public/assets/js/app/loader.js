@@ -112,14 +112,14 @@ Package('Sapphire', {
 			{
 				script.addEvent('readystatechange', function()
 				{
-					if (['loaded', 'complete'].contains(this.readyState)) callback();
+					if (['loaded', 'complete'].contains(this.readyState) && callback) callback();
 				}).bind(this);
 			}
 			else
 			{
 				script.on('load', function()
 				{
-					callback();
+					if (callback) callback();
 				}.bind(this));
 			}
 			script.attr('src', url);
@@ -144,7 +144,7 @@ Package('Sapphire', {
 		{
 			if (list.length == 0)
 			{
-				callback();
+				if (callback) callback();
 				return;
 			}
 
@@ -188,7 +188,7 @@ Package('Sapphire', {
 		{
 			if (list.length == 0)
 			{
-				callback();
+				if (callback) callback();
 				return;
 			}
 
