@@ -60,6 +60,11 @@ Package('Sapphire', {
 				}, this);
 			}
 
+			SAPPHIRE.application.panels.each(function(panel, name)
+			{
+				SAPPHIRE.application.listenPanelEvent('load', name, '', this.onLoad.bind(this, 'panel'));
+			}, this);
+
 			this.waiting = [];
 		},
 

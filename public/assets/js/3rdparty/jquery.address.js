@@ -49,7 +49,8 @@
             },
             _window = function() {
                 try {
-                    return top.document !== UNDEFINED && top.document.title !== UNDEFINED ? top : window;
+                    return top.document !== UNDEFINED && top.document.title !== UNDEFINED && top.jQuery !== UNDEFINED && 
+                        top.jQuery.address !== UNDEFINED && top.jQuery.address.frames() !== false ? top : window;
                 } catch (e) { 
                     return window;
                 }
@@ -94,12 +95,19 @@
                                 .replace(/\/\//, '/').replace(/^\/$/, '');
                     if ($.isFunction(fn)) {
                         fn(value);
-                    } else if ($.isFunction(_t.urchinTracker)) {
+                    } else {
+                      if ($.isFunction(_t.urchinTracker)) {
                         _t.urchinTracker(value);
-                    } else if (_t.pageTracker !== UNDEFINED && $.isFunction(_t.pageTracker._trackPageview)) {
-                        _t.pageTracker._trackPageview(value);
-                    } else if (_t._gaq !== UNDEFINED && $.isFunction(_t._gaq.push)) {
-                        _t._gaq.push(['_trackPageview', decodeURI(value)]);
+                      }
+                      if (_t.pageTracker !== UNDEFINED && $.isFunction(_t.pageTracker._trackPageview)) {
+                          _t.pageTracker._trackPageview(value);
+                      }
+                      if (_t._gaq !== UNDEFINED && $.isFunction(_t._gaq.push)) {
+                          _t._gaq.push(['_trackPageview', decodeURI(value)]);
+                      }
+                      if ($.isFunction(_t.ga)) {
+                          _t.ga('send', 'pageview', value);
+                      }
                     }
                 }
             },
@@ -263,6 +271,7 @@
                 autoUpdate: TRUE, 
                 history: TRUE, 
                 strict: TRUE,
+                frames: TRUE,
                 wrap: FALSE
             },
             _browser = _detectBrowser(),
@@ -384,6 +393,14 @@
                 }
                 return _opts.state;
             },
+            frames: function(value) {
+                if (value !== UNDEFINED) {
+                    _opts.frames = value;
+                    _t = _window();
+                    return this;
+                }
+                return _opts.frames;
+            },            
             strict: function(value) {
                 if (value !== UNDEFINED) {
                     _opts.strict = value;
@@ -566,32 +583,34 @@
     })();
     
     $.fn.address = function(fn) {
-        if (!this.data('address')) {
-            this.on('click', function(e) {
-                if (e.shiftKey || e.ctrlKey || e.metaKey || e.which == 2) {
-                    return true;
-                }
-                var target = e.currentTarget;
-                if ($(target).is('a')) {
-                    e.preventDefault();
-                    var value = fn ? fn.call(target) : 
-                        /address:/.test($(target).attr('rel')) ? $(target).attr('rel').split('address:')[1].split(' ')[0] : 
-                        $.address.state() !== undefined && !/^\/?$/.test($.address.state()) ? 
-                                $(target).attr('href').replace(new RegExp('^(.*' + $.address.state() + '|\\.)'), '') : 
-                                $(target).attr('href').replace(/^(#\!?|\.)/, '');
-                    $.address.value(value);
-                }
-            }).on('submit', function(e) {
-                var target = e.currentTarget;
-                if ($(target).is('form')) {
-                    e.preventDefault();
-                    var action = $(target).attr('action'),
-                        value = fn ? fn.call(target) : (action.indexOf('?') != -1 ? action.replace(/&$/, '') : action + '?') + 
-                            $(target).serialize();
-                    $.address.value(value);
-                }
-            }).data('address', true);
-        }
+        $(this).each(function(index) {
+            if (!$(this).data('address')) {
+                $(this).on('click', function(e) {
+                    if (e.shiftKey || e.ctrlKey || e.metaKey || e.which == 2) {
+                        return true;
+                    }
+                    var target = e.currentTarget;
+                    if ($(target).is('a')) {
+                        e.preventDefault();
+                        var value = fn ? fn.call(target) : 
+                            /address:/.test($(target).attr('rel')) ? $(target).attr('rel').split('address:')[1].split(' ')[0] : 
+                            $.address.state() !== undefined && !/^\/?$/.test($.address.state()) ? 
+                                    $(target).attr('href').replace(new RegExp('^(.*' + $.address.state() + '|\\.)'), '') : 
+                                    $(target).attr('href').replace(/^(#\!?|\.)/, '');
+                        $.address.value(value);
+                    }
+                }).on('submit', function(e) {
+                    var target = e.currentTarget;
+                    if ($(target).is('form')) {
+                        e.preventDefault();
+                        var action = $(target).attr('action'),
+                            value = fn ? fn.call(target) : (action.indexOf('?') != -1 ? action.replace(/&$/, '') : action + '?') + 
+                                $(target).serialize();
+                        $.address.value(value);
+                    }
+                }).data('address', true);
+            }
+        });
         return this;
     };
     

@@ -289,13 +289,12 @@ Package('Sapphire', {
 	*/
 		listenPageEvent : function(event, name, callback)
 		{
-			if (name)
+			if (page)
 			{
 				var page = this.pages[name];
-				if (page && page.loaded)
-				{
+				if (page.loaded)
 					this.fire('load.' + name);
-				}
+				this.listen(event + '.' + name, callback);
 			}
 			this.listen(event + '.' + name, callback);
 		},

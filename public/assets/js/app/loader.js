@@ -105,27 +105,85 @@ Package('Sapphire', {
 			this.loadedCSS.push(file);
 		},
 
+
+		scriptLoaded : function(list, callback)
+		{
+			var id = setTimeout(function()
+			{
+				this.loadNextScript(list, callback);
+			}.bind(this), 1);
+		},
+
+        loadScript : function(url, callback)
+		{
+//			if (url.indexOf('?') != -1)
+//				url += '&r=' + Math.floor(Math.random() * 10000);
+//			else
+//				url += '?r=' + Math.floor(Math.random() * 10000);
+//			$.getScript(url, function()
+//			{
+//				console.log('script loaded');
+//				console.log(JSON.stringify(arguments, null, '  '));
+//				callback();
+//			});
+//			return;
+
+            if(!url || !(typeof url === 'string')){return};
+            var script = document.createElement('script');
+            //if this is IE8 and below, handle onload differently
+            if(typeof document.attachEvent === "object"){
+				//if (url.indexOf('?') != -1)
+				//	url += '&r=' + Math.floor(Math.random() * 10000);
+				//else
+				//	url += '?r=' + Math.floor(Math.random() * 10000);
+                script.onreadystatechange = function(){
+                    //once the script is loaded, run the callback
+                    if (script.readyState === 'loaded' || script.readyState == 'complete'){
+                        if (callback){callback()};
+                    };
+                };
+            } else {
+                //this is not IE8 and below, so we can actually use onload
+                script.onload = function(){
+                    //once the script is loaded, run the callback
+                    if (callback){callback()};
+                };
+            };
+            //create the script and add it to the DOM
+            script.src = url;
+            document.getElementsByTagName('head')[0].appendChild(script);
+		},
+
+/*
+
 		loadScript : function (url, callback)
 		{
+			console.log('loadScript');
+			console.log(url);
+//			$.getScript(url, callback);
+//			return;
+
 			var script = $('<script></script>');
 			if (typeof script.onreadystatechange != 'undefined')
 			{
 				script.addEvent('readystatechange', function()
 				{
-					if (['loaded', 'complete'].contains(this.readyState)) callback();
+					if (['loaded', 'complete'].contains(this.readyState) && callback) callback();
 				}).bind(this);
 			}
 			else
 			{
 				script.on('load', function()
 				{
-					callback();
+					if (callback) callback();
 				}.bind(this));
 			}
 			script.attr('src', url);
 			$('head')[0].appendChild(script[0]);
 	//		$('head').append(script);
+
 		},
+  */
 
 	/**********************************************************************************
 		Method: loadNextScript
@@ -140,11 +198,11 @@ Package('Sapphire', {
 			callback     	- The function to call when the all the scripts have been
 			script     		- The name of the last script loaded
 	*/
-		loadNextScript : function(list, callback, script)
+		loadNextScript : function(list, callback)
 		{
 			if (list.length == 0)
 			{
-				callback();
+				if (callback) callback();
 				return;
 			}
 
@@ -152,7 +210,7 @@ Package('Sapphire', {
 			list.splice(0, 1);
 
 			this.addLoadedScript(script); // make global loader
-			this.loadScript(script, this.loadNextScript.bind(this, list, callback, script));
+			this.loadScript(script, this.scriptLoaded.bind(this, list, callback));
 		},
 
 	/**********************************************************************************
@@ -169,7 +227,10 @@ Package('Sapphire', {
 		{
 			scripts = this.getUnloadedScripts(scripts);
 
-			this.loadNextScript(scripts, callback);
+			this.loadNextScript(scripts, function()
+			{
+				if (callback) callback();
+			});
 		},
 
 	/**********************************************************************************
@@ -188,16 +249,15 @@ Package('Sapphire', {
 		{
 			if (list.length == 0)
 			{
-				callback();
+				if (callback) callback();
 				return;
 			}
 
-			css = list[0];
-			list.splice(0, 1);
+			var css = list[0];
+			var one = list.shift();
 
-			$('head').append($('<link rel="stylesheet" type="text/css">').attr('href', css));
-
-			this.loadNextCSS.delay(50, this, [list, callback, css]);
+			//this.loadNextCSS.delay(1, this, [list, callback, css]);
+			this.loadNextCSS(list, callback);
 		},
 
 	/**********************************************************************************
@@ -214,7 +274,20 @@ Package('Sapphire', {
 		{
 			css = this.getUnloadedCSS(css);
 
-			this.loadNextCSS(css, callback);
+			css.each(function(css)
+			{
+				this.addLoadedCSS(css); // make global loader
+				if (document.createStyleSheet) {
+					document.createStyleSheet(css);
+				}
+				else {
+					$('head').append($('<link rel="stylesheet" type="text/css">').attr('href', css));
+				}
+
+			}, this);
+
+			//this.loadNextCSS(css, callback);
+			if (callback) callback();
 		},
 
 	/**********************************************************************************
@@ -231,8 +304,19 @@ Package('Sapphire', {
 	*/
 		loadMarkup : function(page, callback)
 		{
-			page.selector = $('<div>').load(page.url, callback);
-			page.selector.attr('id', page.name);
+			//page.selector = $('<div>')
+			page.selector = $('<div>');
+				//page.selector.load(page.url, function()
+				$.ajax({
+					type: 'GET',
+					url: page.url,
+					success: function(response, status, xhr)
+					{
+						page.selector.attr('id', page.name);
+						page.selector[0].innerHTML = response;
+						callback();
+					}.bind(this)
+				});
 		}
 	})
 });

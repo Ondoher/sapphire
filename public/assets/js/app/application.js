@@ -225,8 +225,6 @@ Package('Sapphire', {
 			if (this.started) return;
 			this.started = true;
 
-			this.fire('init');
-
 			this.readyWaiting = this.getEventCount('start');
 			if (this.readyWaiting == 0) this.ready.delay(1, this);
 
@@ -258,9 +256,12 @@ Package('Sapphire', {
 				}, this);
 				return;
 			}
-			if (!this.panels[set]) return;
-			if (which) this.panels[set].listenPageEvent(event, which, callback)
-			else this.panels[set].listenGlobalEvent(event, callback);
+
+			if(this.panels[set])
+			{
+				if (which) this.panels[set].listenPageEvent(event, which, callback)
+				else this.panels[set].listenGlobalEvent(event, callback);
+			}
 		},
 
 	/**********************************************************************************'

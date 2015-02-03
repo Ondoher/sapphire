@@ -142,3 +142,5 @@ Package('Sapphire', {
 		}
 	})
 });
+
+window[SAPPHIRE.ns].events = new Sapphire.Eventer();

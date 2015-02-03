@@ -30,14 +30,17 @@ Package('Sapphire.Services', {
 			this.timeout = timeout;
 		},
 
-		call : function(which, data, method, headers)
+		call : function(which, data, method, headers, contentType)
 		{
 			headers = (headers === undefined)?{}:headers;
+			data = (data === undefined)?{}:data;
 			if (this.sessionId && this.useSessionHeader) this.headers['X-Sapphire-Session'] = this.sessionId;
 
 			var deferred = Q.defer();
 			var headers = Object.merge({}, this.headers, headers);
 			var type = 'json';
+			var xssCode = Cookie.read('sapphire-xss');
+			if (xssCode) data.xssCode = xssCode;
 
 			method = (method=== undefined)?'POST':method;
 			method = (SAPPHIRE.forceMethod !== false)?SAPPHIRE.forceMethod:method;
@@ -45,6 +48,7 @@ Package('Sapphire.Services', {
 			$.ajax({
 				data: data,
 				dataType: type,
+				contentType: contentType?contentType:undefined,
 				headers: headers,
 				error: this.onAjaxError.bind(this, deferred),
 				success: this.onAjaxSuccess.bind(this, deferred),
@@ -67,7 +71,7 @@ Package('Sapphire.Services', {
 		onAjaxError : function(deferred, jqXHR, textStatus, errorThrown)
 		{
 			console.log('ajaxError', jqXHR, textStatus, errorThrown);
-			deferred.reject(errorThrown);
+			deferred.reject(jqXHR);
 			this.fire('ajaxError', jqXHR, textStatus, errorThrown);
 		}
 	})

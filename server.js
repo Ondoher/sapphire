@@ -9,7 +9,7 @@ var domain = require('domain');
 var cluster = require('cluster');
 var CONFIG = require('config').CONFIG;
 
-var processes = CONFIG.processes != undefined ? CONFIG.processes : 4;
+var processes = CONFIG.processes != undefined ? CONFIG.processes : 1;
 global.logger = CONFIG.logger?require(CONFIG.logger):require('consoleLogger');
 
 logger.configNode();
@@ -63,15 +63,18 @@ function workerSetup()
 	var notFound = require('notFound');
 	var staticRouter = require('staticRouter');
 	var sessions = require('sessions');
+	var preprocess = require('preprocess');
 	var appPath = require('appPath');
 	var appRouter = require('appRouter');
 	var serviceRouter = require('serviceRouter');
 	var socketRouter = require('socketRouter');
 	var errorHandler = require('errorHandler');
 	var Q = require("q");
+	var compression = require('compression');
 
 // !NOTE: make this configurable, so that it can be turned off in prod
 	Q.longStackSupport = true;
+//	Q.longStackSupport = false;
 
 	var listenPort = CONFIG.port?CONFIG.port:8088;
 	var socketPort = process.env.socketPort;
@@ -91,16 +94,33 @@ function workerSetup()
 		cluster.worker.disconnect();
 	});
 
-	server = http.createServer(connect()
+	var app = connect();
+
+	var useCompression = CONFIG.useCompression===true?true:false;
+	if (useCompression) {
+		app.use(compression({threshold: 5000 }))	
+	}
+
+	app
 		.use(logger.middleware())
 		.use(Cookies.connect())
 		.use(connect.query())
 		.use(connect.bodyParser())
 		.use(sessionRouter())
+		.use(preprocess())
+
+	// Add app-specific middleware if it exists
+	if (CONFIG.middleware) {
+		var middleware = require(CONFIG.basePath + CONFIG.middleware);
+		middleware.createMiddleware(app);
+	}
+
+	server = http.createServer(app
 		.use(appPath())
 		.use(staticRouter())
 		.use(serviceRouter())
 		.use(appRouter())
+		.use(notFound())
 	).listen(listenPort);
 
 	server.listen(listenPort);
@@ -133,5 +153,3 @@ else
 		workerSetup();
 	}
 }
-
-
