@@ -1,6 +1,6 @@
 {
   "name": "sapphire-spa",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Single Page Application Framework",
   "main": "server.js",
   "bin": {
