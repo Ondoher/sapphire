@@ -4,7 +4,7 @@ var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
-var mootools = require('../node_modules/mootools').apply(GLOBAL);
+var mootools = require('mootools').apply(GLOBAL);
 
 var thisDir = path.dirname(module.filename) + '/';
 
