@@ -1,6 +1,5 @@
 var Q = require("q");
 var application = require('application.js');
-var config = require('config/config').CONFIG;
 
 function main(req, res, app)
 {
@@ -29,9 +28,9 @@ exports.getApplication = function(req, res)
 	app.setBody('apps/{path}/templates/body.html');
 	app.setMaster('apps/{path}/templates/master.html');
 
-	var promise = main(req, res, app)
+	return main(req, res, app)
 		.then(function(app)
 		{
 			return Q(app);
-		}).done();
+		})
 }
