@@ -105,17 +105,20 @@ function getNames(params)
 	result.APP = app.toUpperCase().replace(/-/g, '_');;
 	result.app = app;
 
-	result.Name = name.replace(/-/g, ' ').capitalize().replace(/ /g, '')
-	result.nAme = name.camelCase().replace(/-/g, ' ');
-	result.NAME = name.toUpperCase().replace(/-/g, '_');
-	result.name = name;
+	if (name)
+	{
+		result.Name = name.replace(/-/g, ' ').capitalize().replace(/ /g, '')
+		result.nAme = name.camelCase().replace(/-/g, ' ');
+		result.NAME = name.toUpperCase().replace(/-/g, '_');
+		result.name = name;
+	}
 
 	return result;
 }
 
 function getPath(params, which)
 {
-	var path = params.app;
+	var path = params[1];
 	if (params.length != which + 1) return path;
 	path += '/' + params[which];
 
