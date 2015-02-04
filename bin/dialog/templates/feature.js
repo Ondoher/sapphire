@@ -3,7 +3,7 @@ var Feature = require('feature').Feature;
 
 module.exports = function(req, res, app)
 {
-	var {nAme} = new Feature(app, '/{app}/features/dialogs/{name}/');
+	var {nAme} = new Feature(app, '/{path}/dialogs/{name}/');
 
 	{nAme}.addDialog({
 		name: '{name}',

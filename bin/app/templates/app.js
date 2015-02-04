@@ -10,31 +10,28 @@ function main(req, res, app)
 	]);
 
 	app.addJS([
-		'/assets/js/lib/history.js',
 		'/assets/js/lib/translate.js',
 		'/assets/js/lib/templates.js',
-		'/{app}/assets/js/Views/Dialog.js',
-		'/{app}/assets/js/Controllers/Dialog.js',
-		'/{app}/assets/js/Views/Canvas.js',
-		'/{app}/assets/js/Views/Chrome.js',
-		'/{app}/assets/js/Controllers/Chrome.js',
+		'/{app}/assets/js/Views/{App}.js',
+		'/{app}/assets/js/Controllers/{App}.js',
 	]);
 
 
 	return Q(app)
 }
 
-exports.buildApplication = function(req, res, callback)
+exports.getApplication = function(req, res)
 {
 	var session = req.session.get();
 	var app = new application.Application('{APP}');
 
 	app.setTitle('{App}');
-	app.setBody('apps/{app}/templates/chrome.html');
+	app.setBody('apps/{path}/templates/body.html');
+	app.setMaster('apps/{path}/templates/master.html');
 
 	var promise = main(req, res, app)
 		.then(function(app)
 		{
-			app.getHTML(callback);
+			return Q(app);
 		}).done();
 }

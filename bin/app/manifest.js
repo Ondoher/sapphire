@@ -1,26 +1,14 @@
 module.exports = {
 	files: [
-		{path: 'apps/{app}/{app}.js', template: 'app.js'},
-
-		'/{app}/assets/js/Views/Dialog.js',
-		'/{app}/assets/js/Controllers/Dialog.js',
-		'/{app}/assets/js/Views/Canvas.js',
-		'/{app}/assets/js/Views/Chrome.js',
-		'/{app}/assets/js/Controllers/Chrome.js',
+		{path: 'apps/{path}/{app}.js', template: 'app.js'},
+		{path: 'apps/{path}/templates/body.html', template: 'body.html'},
+		{path: 'apps/{path}/templates/master.html', template: 'master.html'},
+		{path: 'apps/{path}/assets/css/Views/{app}.css', template: 'app.css'},
+		{path: 'apps/{path}/assets/js/Views/{App}.js', template: 'view.js'}
+		{path: 'apps/{path}/assets/js/Controllers/{App}.js', template: 'controller.js'},
+		{path: 'apps/{path}/assets/js/Models/Service.js', template: 'service.js'},
 	]);
-
 
 	return Q(app)
 }
 
-exports.buildApplication = function(req, res, callback)
-{
-	var session = req.session.get();
-	var app = new application.Application('{APP}');
-
-	app.setTitle('{App}');
-	app.setBody('apps/{app}/templates/body.html');
-
-
-	],
-}

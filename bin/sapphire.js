@@ -4,6 +4,7 @@ var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
+var ncp = require('ncp');
 var mootools = require('mootools').apply(GLOBAL);
 
 var thisDir = path.dirname(module.filename) + '/';
@@ -34,10 +35,21 @@ var commands = ['install', 'page', 'dialog', 'feature', 'app', 'vc'];
 
 if (params.length == 0) return outputInstructions();
 if (commands.indexOf(params[0]) == -1) return outputInstructions();
-if (params[0] == 'install' && params.length != 1) return outputInstructions();
-if (params[0] == 'app' && params.length != 2) return outputInstructions();
-if (params[0] == 'vc' && params.length < 3) return outputInstructions();
-if (params.length != 3 && params[0] != 'vc') return outputInstructions();
+switch (params[0])
+{
+	case 'install':
+		if (params.length != 1) return outputInstructions()
+		break;
+	case 'app':
+		if (params.length < 2 || params.length > 3) return outputInstructions();
+		break;
+	case 'vc':
+	case 'page':
+	case 'dialog':
+	case 'feature':
+		if (params.length < 3 || params.length > 4) return outputInstructions();
+		break;
+}
 
 function replaceNames(text, names)
 {
@@ -98,46 +110,78 @@ function getNames(params)
 	result.NAME = name.toUpperCase().replace(/-/g, '_');
 	result.name = name;
 
-	console.log(result);
-
 	return result;
 }
 
-function getPath(params)
+function getPath(params, which)
 {
-	if (params.length != 4) return '';
-	var path = params[3];
+	var path = params.app;
+	if (params.length != which + 1) return path;
+	path += '/' + params[which];
 
 	return path;
+}
+
+function makeInstall()
+{
+	console.log('this dir', thisDir);
+	console.log('curr dir', process.cwd());
+
+	var destination = process.cwd();
+	var source = thisDir;
+
+	destination = 'c:\\dev\\test';
+
+	console.log(source + '../node_modules/', destination + '/node_modules');
+
+	ncp(source + '../node_modules/', destination + '/node_modules', function()
+	{
+		console.log(arguments);
+		ncp(source + '../lib/', destination + '/node_modules/', function() {
+			console.log(arguments);
+			ncp(source + '../public/', destination + '/public/', function() {
+				console.log(arguments);
+				ncp(source + '../server.js', destination + '/server.js', function() {console.log(arguments);});
+			});
+		});
+	});
+
+
 }
 
 switch (params[0])
 {
 	case 'install':
-		console.log('not implemented');
+		makeInstall();
 		break;
 
 	case 'app':
-		console.log('not implemented');
+		var names = getNames(params);
+		names.path = getPath(params, 2);
+		processManifest('app', names);
 		break;
 
 	case 'page':
 		var names = getNames(params);
+		names.path = getPath(params, 3);
 		processManifest('page', names);
 		break;
 
 	case 'dialog':
 		var names = getNames(params);
+		names.path = getPath(params, 3);
 		processManifest('dialog', names);
 		break;
 
 	case 'feature':
 		var names = getNames(params);
+		names.path = getPath(params, 3);
 		processManifest('feature', names);
 		break;
+
 	case 'vc':
 		var names = getNames(params);
-		names.path = getPath(params);
+		names.path = getPath(params, 3);
 		processManifest('vc', names);
 		break;
 }

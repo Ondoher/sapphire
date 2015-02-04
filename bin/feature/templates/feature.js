@@ -3,7 +3,7 @@ var Feature = require('feature').Feature;
 
 module.exports = function(req, res, app)
 {
-	var {nAme} = new Feature(app, '/{app}/features/{name}/');
+	var {nAme} = new Feature(app, '/{path}/features/{name}/');
 
   	{nAme}.addJS(['assets/js/Controllers/{Name}.js', 'assets/js/Views/{Name}.js']);
 
