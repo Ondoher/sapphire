@@ -7,18 +7,20 @@ in the near future
 */
 var domain = require('domain');
 var cluster = require('cluster');
-var CONFIG = require('config').CONFIG;
+var Q = require("q");
+var sapphire = require("sapphire");
+var CONFIG = sapphire.CONFIG;
 
 var processes = CONFIG.processes != undefined ? CONFIG.processes : 1;
-global.logger = CONFIG.logger?require(CONFIG.logger):require('consoleLogger');
+global.logger = CONFIG.logger?require(CONFIG.logger):sapphire.logger
 
 logger.configNode();
 logger.open(processes);
-logger.info(undefined, "Initialized configs and logconfigs, starting the node.js server, worker count: " + processes);
+logger.info("Initialized configs and logconfigs, starting the node.js server, worker count: " + processes);
 
 process.on('exit', function()
 {
-	logger.info(undefined, 'pid', process.pid, 'master', cluster.isMaster, 'exiting...');
+	logger.info('pid', process.pid, 'master', cluster.isMaster, 'exiting...');
 });
 
 function masterSetup()
@@ -26,7 +28,7 @@ function masterSetup()
 
 	var workers = $H({});
 	var baseSocketPort = CONFIG.baseSocketPort;
-	logger.info(undefined, "Setting up the Master and forking workers : " + processes);
+	logger.info("Setting up the Master and forking workers : " + processes);
 
 	for (var idx = 0; idx < processes; idx++)
 	{
@@ -36,7 +38,7 @@ function masterSetup()
 
 	cluster.on('disconnect', function(worker)
 	{
-		logger.error(undefined, 'Worker died/disconnected');
+		logger.error('Worker died/disconnected');
 		var workerItem = workers.get(worker.id);
 		var port = workerItem.port;
 
@@ -47,30 +49,15 @@ function masterSetup()
 
 	process.on('uncaughtException', function(err)
 	{
-		logger.error(undefined, 'Master Exception: \n' + err.stack);
+		console.log
+		logger.error('Master Exception: \n' + err.stack);
 	});
 }
 
 function workerSetup()
 {
-	logger.info(undefined, "Setting up the Worker: pid: " + process.pid);
+	logger.info("Setting up the Worker: pid: " + process.pid);
 
-	var http = require('http');
-	var Cookies = require('cookies');
-	var sessions = require('sessions');
-	var sessionRouter = require('sessionRouter');
-	var connect = require('connect');
-	var notFound = require('notFound');
-	var staticRouter = require('staticRouter');
-	var sessions = require('sessions');
-	var preprocess = require('preprocess');
-	var appPath = require('appPath');
-	var appRouter = require('appRouter');
-	var serviceRouter = require('serviceRouter');
-	var socketRouter = require('socketRouter');
-	var errorHandler = require('errorHandler');
-	var Q = require("q");
-	var compression = require('compression');
 
 // !NOTE: make this configurable, so that it can be turned off in prod
 	Q.longStackSupport = true;
@@ -79,11 +66,9 @@ function workerSetup()
 	var listenPort = CONFIG.port?CONFIG.port:8088;
 	var socketPort = process.env.socketPort;
 
-	var server;
-
 	process.on('uncaughtException', function(err)
 	{
-		logger.error(undefined, 'Worker Exception: \n' + err.stack);
+		logger.error('Worker Exception: \n' + err.stack);
 
 		var killTimer = setTimeout(function()
 		{
@@ -94,54 +79,23 @@ function workerSetup()
 		cluster.worker.disconnect();
 	});
 
-	var app = connect();
-
-	var useCompression = CONFIG.useCompression===true?true:false;
-	if (useCompression) {
-		app.use(compression({threshold: 5000 }))	
-	}
-
-	app
-		.use(logger.middleware())
-		.use(Cookies.connect())
-		.use(connect.query())
-		.use(connect.bodyParser())
-		.use(sessionRouter())
-		.use(preprocess())
-
-	// Add app-specific middleware if it exists
-	if (CONFIG.middleware) {
-		var middleware = require(CONFIG.basePath + CONFIG.middleware);
-		middleware.createMiddleware(app);
-	}
-
-	server = http.createServer(app
-		.use(appPath())
-		.use(staticRouter())
-		.use(serviceRouter())
-		.use(appRouter())
-		.use(notFound())
-	).listen(listenPort);
+	var server = sapphire.createServer();
 
 	server.listen(listenPort);
-//	  console.info(process.pid, 'Server running at http://127.0.0.1:' + listenPort + '/');
-	logger.info(undefined, process.pid + ' Server running at http://127.0.0.1:' + listenPort + '/');
 
+//	  console.info(process.pid, 'Server running at http://127.0.0.1:' + listenPort + '/');
+//	logger.info(process.pid + ' Server running at http://127.0.0.1:' + listenPort + '/');
+/*
 	if (CONFIG.baseSocketPort)
 	{
 		io = require('socket.io').listen(server);
 		io.set('log level', 0);
 		socketRouter.listen(socketPort);
-		logger.info(undefined, process.pid +  'Socket server running at http://127.0.0.1:' + socketPort);
+		logger.info(process.pid +  'Socket server running at http://127.0.0.1:' + socketPort);
 	}
+*/
 }
 
-if (processes == 0)
-{
-	workerSetup();
-}
-else
-{
 	if (cluster.isMaster)
 	{
 		logger.configMaster();
@@ -152,4 +106,3 @@ else
 		logger.configWorker();
 		workerSetup();
 	}
-}

@@ -13,11 +13,11 @@ function unDos(filepath)
 {
 	filepath = path.resolve(filepath);
 
-	if (filepath.indexOf(':') == 1)
+/*	if (filepath.indexOf(':') == 1)
 	{
 		filepath = filepath.slice(2);
 	}
-
+*/
   	filepath = filepath.replace(/\\/g, '/');
 	return filepath;
 }
@@ -132,8 +132,6 @@ function makeInstall()
 
 	var destination = process.cwd();
 	var source = thisDir;
-
-	destination = 'c:\\dev\\test';
 
 	console.log(source + '../node_modules/', destination + '/node_modules');
 
