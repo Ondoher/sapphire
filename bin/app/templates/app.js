@@ -1,5 +1,5 @@
 var Q = require("q");
-var sapphire = require('sapphire.js');
+var sapphire = require('sapphire-express');
 
 function main(req, res, app)
 {

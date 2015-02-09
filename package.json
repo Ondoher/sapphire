@@ -1,6 +1,6 @@
 {
   "name": "sapphire-express",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Single Page Application Framework",
   "main": "server.js",
   "bin": {
@@ -33,7 +33,7 @@
   "keywords": [
     "framework",
     "sapphire",
-    "spa"
+    "spa",
     "express"
   ],
   "author": "Glenn Anderson",

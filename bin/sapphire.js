@@ -135,19 +135,9 @@ function makeInstall()
 
 	console.log(source + '../node_modules/', destination + '/node_modules');
 
-	ncp(source + '../node_modules/', destination + '/node_modules', function()
+	ncp(source + '../lib/files', destination, function()
 	{
-		console.log(arguments);
-		ncp(source + '../lib/', destination + '/node_modules/', function() {
-			console.log(arguments);
-			ncp(source + '../public/', destination + '/public/', function() {
-				console.log(arguments);
-				ncp(source + '../server.js', destination + '/server.js', function() {console.log(arguments);});
-			});
-		});
 	});
-
-
 }
 
 switch (params[0])
