@@ -1,4 +1,4 @@
-var Q = require("q");
+var Q = require('q');
 var sapphire = require('sapphire-express');
 
 function main(req, res, app)
@@ -22,7 +22,7 @@ function main(req, res, app)
 exports.getApplication = function(req, res)
 {
 	var session = req.session.get();
-	var app = new sapphire.Application('{APP}');
+	var app = new sapphire.Application('{APP}', res, req);
 
 	app.setTitle('{App}');
 	app.setBody('apps/{path}/templates/body.html');
