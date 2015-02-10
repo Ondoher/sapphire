@@ -22,7 +22,7 @@ function main(req, res, app)
 exports.getApplication = function(req, res)
 {
 	var session = req.session.get();
-	var app = new sapphire.Application('{APP}', res, req);
+	var app = new sapphire.Application('{APP}', req, res);
 
 	app.setTitle('{App}');
 	app.setBody('apps/{path}/templates/body.html');
