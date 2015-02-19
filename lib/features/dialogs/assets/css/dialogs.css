@@ -1,0 +1,168 @@
+/* ==========================================================================
+	 Dialogs Common
+	 ========================================================================== */
+
+#dialog-overlay {
+	background: none repeat scroll 0 0 black;
+	bottom: 0;
+	height: 100%;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 100%;
+	z-index: 10;
+	visibility: hidden;
+	display: inline-block;
+	opacity: 0;
+	-moz-opacity:0;
+	filter:alpha(opacity=50);
+}
+
+#dialogs {
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	position: absolute;
+	width: 100%;
+	text-align: center;
+}
+
+.dialog {
+	background: #000000;
+	background: -moz-linear-gradient(top,  #000000 0%, #1e2a39 73%, #1e2a39 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#000000), color-stop(73%,#1e2a39), color-stop(100%,#1e2a39));
+	background: -webkit-linear-gradient(top,  #000000 0%,#1e2a39 73%,#1e2a39 100%);
+	background: -o-linear-gradient(top,  #000000 0%,#1e2a39 73%,#1e2a39 100%);
+	background: -ms-linear-gradient(top,  #000000 0%,#1e2a39 73%,#1e2a39 100%);
+	background: linear-gradient(to bottom,  #000000 0%,#1e2a39 73%,#1e2a39 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#1e2a39',GradientType=0 );
+	box-shadow: 0 0 20px 0px rgba(0, 0, 0, 1), inset 0 0 0 1px #27313d;
+	border-radius: 0;
+	display: inline-block;
+	min-width: 300px;
+	top: 100px;
+	position: relative;
+	text-align: left;
+	padding: 0 40px;
+	z-index: 10;
+}
+
+.dialog-open #dialog-overlay .dialog {
+	visbility: visible;
+	opacity: 1;
+}
+
+.dialog-open #dialog-overlay {
+	opacity: 0.65;
+	visibility: visible;
+}
+
+.dialog-open .dialog {
+	display: inline-block;
+	visibility: visible;
+}
+
+.dialog p {
+	line-height: 30px;
+}
+
+.dialog h1 span {
+	background-image: url("/common/features/dialogs/assets/images/close_x.png");
+	width: 30px;
+	height:30px;
+	content: " ";
+	position: absolute;
+	right: 17px;
+	top: 17px;
+	cursor: pointer;
+	z-index: 1;
+}
+
+.dialog h1 span.navigate-current {
+	background: url("/common/features/dialogs/assets/images/close_x.png") 0 -29px no-repeat;
+	width: 30px;
+	height:30px;
+	content: " ";
+	position: absolute;
+	right: 17px;
+	top: 17px;
+	cursor: pointer;
+}
+
+.dialog h1 {
+	height: 43px;
+	font-weight: normal;
+	padding: 30px 0 20px 0;
+	font-size: 22px;
+}
+
+.dialog .body {
+	min-height: 130px;
+	max-width: 550px;
+	font-size: 19px;
+}
+
+.dialog .footer {
+	height: 48px;
+	padding: 12px 0 30px 0;
+	margin: 0;
+	text-align: center;
+}
+
+.dialog .footer .button {
+	margin: 0 8px 0 0;
+}
+
+.dialog .footer #button-1 {
+	width: 80px;
+}
+
+.show-dialog-busy {display: none}
+.dialog-busy .show-dialog-busy {display: block}
+
+.dialog-busy-state {
+	background: #1e2a39;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	margin: 0 -40px;
+	box-shadow: inset 0 0 1px 0 rgba(255, 255, 255, .5);
+	z-index: 1;
+}
+
+.dialog-spinner {
+	background: #1e2a39 url("/common/features/dialogs/assets/images/spinner_96_blue.png") center center no-repeat;
+	text-align: center;
+	display: block;
+	height: 96px;
+	width: 96px;
+	margin: 130px auto 0 auto;
+	-webkit-animation: spinner96blue 1s steps(19) infinite;
+	-moz-animation: spinner96blue 1s steps(19) infinite;
+	-o-animation: spinner96blue 1s steps(19) infinite;
+	animation: spinner96blue 1s steps(19) infinite;
+}
+
+
+@-webkit-keyframes spinner96blue {
+	0% { background-position: center 0; }
+	100% { background-position: center -1824px; }
+}
+
+@-moz-keyframes spinner96blue {
+	0% { background-position: center 0; }
+	100% { background-position: center -1824px; }
+}
+
+@-o-keyframes spinner96blue {
+	0% { background-position: center 0; }
+	100% { background-position: center -1824px; }
+}
+
+@keyframes spinner96blue {
+	0% {  background-position: center 0; }
+	100% {  background-position: center -1824px; }
+}
+
+
