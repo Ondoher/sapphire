@@ -16,9 +16,9 @@ Package('{App}.Controllers', {
 
 		onReady : function()
 		{
-			this.view = new Web.Views.{App}();
+			this.view = new {App}.Views.{App}();
 		}
 	})
 });
 
-SAPPHIRE.application.registerController('{app}', new Web.Controllers.{App}());
+SAPPHIRE.application.registerController('{app}', new {App}.Controllers.{App}());

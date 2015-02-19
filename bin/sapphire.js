@@ -148,6 +148,7 @@ switch (params[0])
 
 	case 'app':
 		var names = getNames(params);
+		names.cwd = process.cwd();
 		names.path = getPath(params, 2);
 		processManifest('app', names);
 		break;

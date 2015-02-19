@@ -1,5 +1,10 @@
 module.exports = {
 	files: [
+		{path: '{app}.bat', template: 'run.bat'},
+		{path: 'apps/{app}/sapphire-config/config.js', template: 'config.js'},
+		{path: 'apps/{app}/sapphire-config/config.dev.js', template: 'config.dev.js'},
+		{path: 'apps/{app}/sapphire-config/config.prod.js', template: 'config.prod.js'},
+		{path: 'apps/{app}/sapphire-config/config.js'},
 		{path: 'apps/{path}/{app}.js', template: 'app.js'},
 		{path: 'apps/{path}/templates/body.html', template: 'body.html'},
 		{path: 'apps/{path}/templates/master.html', template: 'master.html'},
