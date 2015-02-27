@@ -55,7 +55,7 @@ Package('Sapphire', {
 		},
 
 	/**********************************************************************************'
-		Method: dialog
+		Method: addDalog
 
 		The builder will insert a JavaScript snippet to call this function for every
 		dialog that has been added. Dialogs are modal windows designed to pop up over pages.
@@ -92,8 +92,8 @@ Package('Sapphire', {
 		showPage : function(name)
 		{
 		 	var passed = Array.prototype.slice.call(arguments, 1);
-			this.pages.showPage(name, passed);
 			this.hasShownPage = true;
+			return this.pages.showPage(name, passed);
 		},
 
 	/**********************************************************************************'
@@ -113,7 +113,7 @@ Package('Sapphire', {
 		showPanel : function(set, name)
 		{
 		 	var passed = Array.prototype.slice.call(arguments, 1);
-			this.panels[set].showPage(name, passed);
+			return this.panels[set].showPage(name, passed);
 		},
 
 		setPanelContainer : function(name, selector)
@@ -179,7 +179,7 @@ Package('Sapphire', {
 	*/
 		hideDialog : function(name)
 		{
-			this.dialogs.hidePage(name);
+			return this.dialogs.hidePage(name);
 		},
 
 	/**********************************************************************************'
@@ -264,45 +264,6 @@ Package('Sapphire', {
 			}
 		},
 
-	/**********************************************************************************'
-		Method: setPageEffects
-
-		Call this method to register callbacks for adding animations when a page is shown or hidden.
-
-		Parameters:
-			show      - the <showEffect> function to call when a page is shown
-			hide      - the <hideEffect> function to call when a page is hidden
-
-	 	See Also:
-			<showEffect>, <hideEffect>
-	*/
-		setPageEffects : function (show, hide)
-		{
-			this.pages.setEffects(show, hide);
-		},
-
-	/**********************************************************************************'
-		Method: setDialogEffects
-
-		Call this method to register callbacks for adding animations when a dialog is shown or hidden.
-
-		Parameters:
-			show      - the <showEffect> function to call when a dialog is shown
-			hide      - the <hideEffect> function to call when a dialogis hidden
-
-	 	See Also:
-			<showEffect>, <hideEffect>
-	*/
-		setDialogEffects : function (show, hide)
-		{
-			this.dialogs.setEffects(show, hide);
-		},
-
-		setPanelEffects : function (name, show, hide)
-		{
-			this.panels[name].setEffects(show, hide);
-		},
-
 		registerController : function(name, controller)
 		{
 			this.controllers[name] = controller;
@@ -341,36 +302,3 @@ Package('Sapphire', {
 });
 
 SAPPHIRE.application = new Sapphire.Application();
-
-//===========================================================================================
-// Group: Callbacks
-//===========================================================================================
-/**********************************************************************************'
-	Function: showEffect
-
-	When you call <setPageEffects> or <setDialogEffects> your showEffect
-	callback should look like this.
-
-	> showEffect: function(oldPage, newPage, callback)
-
-	Parameters:
-		oldPage		- the jQuery selector for the page being hidden
-		newPage     - the JQuery selector of the page or dialog being shown
-		callback    - a function to call when the effect has finished
-
-*/
-
-
-/**********************************************************************************'
-	Function: hideEffect
-
-	When you call <setPageEffects> or <setDialogEffects> your showEffect
-	callback should look like this.
-
-	> hideEffect: function(node, callback)
-
-	Parameters:
-		node        - the JQuery selector of the page or dialog being shown
-		callback    - a function to call when the effect has finished
-*/
-

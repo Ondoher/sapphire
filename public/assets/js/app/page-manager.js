@@ -11,6 +11,15 @@ Package('Sapphire', {
 
 	See Also:
 		<Application>
+
+	Events:
+		load
+		canShow
+		showing
+		hiding
+		firstShow
+		show
+		hide
 */
 	PageManager : new Class({
 		Extends : Sapphire.Eventer,
@@ -21,17 +30,15 @@ Package('Sapphire', {
 		This is the constructor for the class.
 
 		Parameters:
-			exclusive     - true if only one page at a time can be shown, false otherwise
+			primary   - true if this is the primary page manager, usually resevered for pages
 
 	*/
-		initialize: function(exclusive)
+		initialize: function(primary)
 		{
 			this.parent();
-			this.exclusive = exclusive;
+			this.primary = primary;
 			this.pages = $({});
 			this.currentPage = undefined;
-			this.showEffect = function (oldPage, newPage, callback) {callback()};
-			this.hideEffect = function (oldPage, newPage, callback) {callback()};
 		},
 
 	/**********************************************************************************
@@ -64,38 +71,27 @@ Package('Sapphire', {
 			this.pages[spec.name] = $H(spec);
 		},
 
-	/**********************************************************************************
-		Method: afterShowEffect
-
-		This function is passed to the show effect callback. When an effect
-		has completed, it must call this callback.
-
-		Parameters:
-			name        - The name of the page
-			passed      - the variables that were passed to the show method
-
-		Fires:
-			- firstShow
-			- show
-			- show.<name>
-	*/
-		afterShowEffect : function(oldPage, newPage, passed)
+		checkWait : function(deferred)
 		{
-			var name = newPage.name;
-			var page = newPage;
+			this.waiting--;
+			if (this.waiting == 0) deferred.resolve(true);
 
-			page.selector.css('display', 'block');
+		},
 
-			if (oldPage && this.currentPage != name) this.hidePage(oldPage.name, name);
+		fireEventAndWait : function(which, args)
+		{
+			var deferred = Q.defer();
+
+			this.waiting = this.getEventCount(which);
+
+			if (this.waiting == 0) deferred.resolve(true);
 			else
 			{
-			// There is no page to hide, so the animation is over
-				this.fire('postAnimate.' + name, newPage.selector);
-				this.fire('postAnimate', name, newPage.selector);
-				this.transitioning = false;
+				args.push(this.checkWait.bind(this, deferred));
+				this.fireArgs(which, args);
 			}
 
-			this.currentPage = newPage.name;
+			return deferred.promise;
 		},
 
 	/**********************************************************************************
@@ -117,82 +113,96 @@ Package('Sapphire', {
 			var oldPageSelector = null;
 			var newPage = page;
 
-			if (page == undefined) return;
+			console.log('showPage', name, passed, page, this.transitioning);
+			if (page == undefined) return Q(false);
+			if (this.transitioning) return Q(false);
 
-			if (this.transitioning) return;
-
+		// give the application a chance to refuse the page show
 			this.fire('canShow', name, function(can)
 			{
 				canShow = canShow && can;
 			}.bind(this));
-			if (!canShow) return;
+			if (!canShow) return Q(false);
 
-			this.loadPage(name, function(loaded)
-			{
-			// Remove the current page if needed
-				if (this.currentPage == name && passedJSON == this.passedJSON)
+		// don't reshow the current page
+			if (this.currentPage == name && passedJSON == this.passedJSON) return Q(true);
+
+			this.transitioning = true;
+
+		// make sure the page is loaded
+			return this.loadPage(name)
+				.then(function(loaded)
 				{
-					return;
-				}
+				// add the page into the dom, but add the class hidden to it first
+					page.selector.addClass('hidden');
+					if (!page.dontPrune || !page.shown) this.container.append(page.selector);
 
-				this.fireArgs('preShow.' + name);
-				this.fireArgs('preShow', name);
-
-				if (this.currentPage)
-				{
-					this.fireArgs('preHide.' + this.currentPage);
-					this.fireArgs('preHide', this.currentPage);
-				}
-
-				this.transitioning = true;
-				if (this.currentPage && this.exclusive)
-				{
-					$(document.body).removeClass(this.currentPage);
+					if (loaded)
+					{
+						this.fire('load', name, page.selector);
+						this.fire('load.' + name, page.selector);
+					}
 
 					oldPage = this.pages[this.currentPage];
-					oldPageSelector = oldPage.selector
-				}
 
-				if (this.exclusive)
-					$(document.body).addClass(name);
-				//this.currentPage = name;
-				this.passedJSON = passedJSON
+				// fire the willShow event, passing both the new page and the old. This allows the application to animate the transition.
+					return this.fireEventAndWait('willShow', [page, oldPage])
+						.then(this.hideCurrentPage.bind(this))
+						.then(function()
+						{
+							if (this.primary) $(document.body).addClass(name);
+							this.passedJSON = passedJSON
+							this.currentPage = name;
 
-			//!Pending: should we increment z-order here?
-				if (!page.dontPrune || !page.shown)
-				{
-					this.container.append(page.selector);
-					page.shown = true;
-				}
+							page.selector.removeClass('hidden');
+							if (!page.shown) this.fireArgs('firstShow.' + name, passed);
 
-				if (loaded)
-				{
-					this.fire('load', page.selector);
-					this.fire('load.' + name);
-				}
+							page.shown = true;
 
-				this.oldPage = oldPage;
-				this.newPage = newPage;
+							this.fireArgs('show.' + name, passed);
 
-				if (!page.shown)
-					this.fireArgs('firstShow.' + name, passed);
+							passed.splice(0, 0, name)
+							this.fireArgs('show', passed);
 
-				page.shown = true;
-
-				this.fireArgs('show.' + name, passed);
-				this.fireArgs('preAnimate.' + name, passed);
-				passed.splice(0, 0, name)
-				this.fireArgs('show', passed);
-				this.fireArgs('preAnimate', passed);
-
-				this.showEffect(oldPageSelector, page.selector, this.afterShowEffect.bind(this, oldPage, newPage, passed));
-			}.bind(this));
+							this.transitioning = false;
+							return Q(true);
+						}.bind(this));
+				}.bind(this));
 		},
 
 		show : function(name)
 		{
 		 	var passed = Array.prototype.slice.call(arguments, 1);
-			this.showPage(name, passed);
+			return this.showPage(name, passed);
+		},
+
+		hidePage : function(name)
+		{
+			var page = this.pages[name];
+
+			return this.fireEventAndWait('willHide', [page])
+				.then(function()
+				{
+					this.fire('hide.' + name, page);
+					this.fire('hide', name, page);
+
+					if (this.primary)
+						$(document.body).removeClass(name);
+					if (!page.prune)
+						page.selector.detach();
+					else
+						page.selector.css('display', 'none');
+
+					this.currentPage = '';
+					return Q(true);
+				}.bind(this));
+		},
+
+		hideCurrentPage : function()
+		{
+			if (!this.currentPage) return Q(false);
+
+			return this.hidePage(this.currentPage);
 		},
 
 		reset : function()
@@ -215,68 +225,6 @@ Package('Sapphire', {
 		},
 
 	/**********************************************************************************
-		Method: afterHideEffect
-
-		This function is passed to the hide effect callback. When an effect
-		has completed, it must call this callback. The page will be removed from the
-		DOM or hidden when this function has completed.
-
-		Parameters:
-			name        - The name of the page
-			newName     - the name of the new page
-
-		Fires:
-			- onShow
-			- onShow{name}
-	*/
-		afterHideEffect : function(name, newName)
-		{
-			var page = this.pages[name];
-			var newPage = this.pages[newName];
-
-			this.fire('hide.' + name);
-			this.fire('hide', name);
-
-			if (!page.prune)
-				page.selector.detach();
-			else
-				page.selector.css('display', 'none');
-
-			this.currentPage = '';
-
-
-		// animation is not complete until the page is hidden
-			if (newName)
-			{
-				this.fire('postAnimate.' + newName, newPage.selector);
-				this.fire('postAnimate', newName, newPage.selector);
-				this.transitioning = false;
-			}
-		},
-
-
-		setEffects : function(show, hide)
-		{
-			if (show) this.showEffect = show;
-			if (hide) this.hideEffect = hide;
-		},
-	/**********************************************************************************
-		Method: hidePage
-
-		The application manager calls this method to hide a page. This method only needs to be called if
-		the page manager is set exclusive.
-
-		Parameters:
-			name        - The name of the page
-	*/
-		hidePage : function(name, newPage)
-		{
-			var page = this.pages[name];
-
-			this.hideEffect(this.oldPage?this.oldPage.selector:null, this.newPage.selector, this.afterHideEffect.bind(this, name, newPage));
-		},
-
-	/**********************************************************************************
 		Method: listenPageEvent
 
 		The application manager calls this method to listen for events that are exclusive to
@@ -289,14 +237,11 @@ Package('Sapphire', {
 	*/
 		listenPageEvent : function(event, name, callback)
 		{
-			if (page)
-			{
-				var page = this.pages[name];
-				if (page.loaded)
-					this.fire('load.' + name);
-				this.listen(event + '.' + name, callback);
-			}
+			var page = this.pages[name];
+
 			this.listen(event + '.' + name, callback);
+
+			if (page && page.loaded) this.fire('load.' + name);
 		},
 
 	/**********************************************************************************
@@ -315,47 +260,37 @@ Package('Sapphire', {
 		},
 
 	/**********************************************************************************
-		Method: stepComplete
-
-		called when part of a page has been loaded, when all steps are complete, the
-		callback will be called
-
-		Parameters:
-			name		- the name of the page being loaded
-			callback	- the function to call when done
-			loaded		- true if the page had to be loaded, false otherwise
-	*/
-
-		stepComplete : function(name, callback, type, loaded)
-		{
-			var page = this.pages[name];
-
-			page.loading++;
-			if (page.loading == 3) callback(loaded);
-		},
-
-
-
-	/**********************************************************************************
 		Method: loadPage
 
-		The application manager calls this method to hot load the page and it parts
+		The application manager calls this method to hot load the page and its parts
 
 		Parameters:
-			event        - The event to listen for
-			callback     - The function to call when everything has been loaded
-	*/
-		loadPage : function(name, callback)
-		{
-			var page = this.pages[name];
-			page.loading = 0;
+			name  - the name of the page to load
 
-			if (page.selector) callback(false);
+		Returns:
+			a promise that will be fulfilled when loading is completed
+	*/
+		loadPage : function(name)
+		{
+			var deferred = Q.defer();
+			var page = this.pages[name];
+
+			console.log('loadPage', name, page);
+
+			if (page.selector) return Q(false);
 			else
 			{
-				SAPPHIRE.loader.loadScripts(page.javascript, this.stepComplete.bind(this, name, callback, 'scripts', true));
-				SAPPHIRE.loader.loadCSS(page.css, this.stepComplete.bind(this, name, callback, 'css', true));
-				SAPPHIRE.loader.loadMarkup(page, this.stepComplete.bind(this, name, callback, 'markup', true));
+				var promises = [];
+
+				promises.push(SAPPHIRE.loader.loadScripts(page.javascript));
+				promises.push(SAPPHIRE.loader.loadCSS(page.css));
+				promises.push(SAPPHIRE.loader.loadMarkup(page));
+
+				return Q.all(promises)
+					.then(function()
+					{
+						return Q(true);
+					}.bind(this));
 			}
 		}
 	})
