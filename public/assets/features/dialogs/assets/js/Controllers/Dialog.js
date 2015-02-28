@@ -1,6 +1,5 @@
-var views = Import('Common.Views');
 
-Package('Common.Controllers.Mixins', {
+Package('Sapphire.Controllers.Mixins', {
 	Dialog : new Class({
 
 		initializeDialog : function(name, autoSetup)
@@ -22,7 +21,7 @@ Package('Common.Controllers.Mixins', {
 
 		setupDialog : function()
 		{
-			this.dialogView = new views.Dialog(this.name);
+			this.dialogView = new Sapphire.Views.Dialog(this.name);
 			this.dialogView.listen('cancel', this.onDialogCancel.bind(this));
 		},
 

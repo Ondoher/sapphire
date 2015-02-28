@@ -1,4 +1,4 @@
-Package('Common.Views', {
+Package('Sapphire.Views', {
 	Dialog : new Class({
 		Extends: Sapphire.View,
 

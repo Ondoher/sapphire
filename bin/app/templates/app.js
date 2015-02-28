@@ -29,6 +29,8 @@ exports.getApplication = function(req, res)
 	app.setMaster('apps/{path}/templates/master.html');
 
 	return main(req, res, app)
+		.then(sapphire.features.animator.bind(sapphire.features.animator, req, res))
+		.then(sapphire.features.dialogs.bind(sapphire.features.dialogs, req, res))
 		.then(function(app)
 		{
 			return Q(app);

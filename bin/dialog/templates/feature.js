@@ -1,5 +1,5 @@
 var Q = require('q');
-var Feature = require('feature').Feature;
+var Feature = require('sapphire-express').Feature;
 
 module.exports = function(req, res, app)
 {

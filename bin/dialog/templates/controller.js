@@ -1,7 +1,7 @@
 Package('{App}.Controllers', {
 	{Name} : new Class({
 		Extends : Sapphire.Controller,
-		Implements : [Common.Controllers.Mixins.Dialog],
+		Implements : [Sapphire.Controllers.Mixins.Dialog],
 
 		initialize : function()
 		{

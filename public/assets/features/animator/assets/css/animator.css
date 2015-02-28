@@ -1,0 +1,74 @@
+.instant-onscreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+}
+
+.onscreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	-webkit-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	-moz-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	-o-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	width: 100%;
+}
+
+.offscreen-left {
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+}
+
+.offscreen-right {
+	position: absolute;
+	top: 0;
+	left: 100%;
+	width: 100%;
+}
+
+.move-offscreen-left {
+	position: absolute;
+	top: 0;
+	left: -100%;
+	-webkit-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	-moz-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	-o-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	opacity: 0;
+	width: 100%;
+}
+
+.move-offscreen-right {
+	position: absolute;
+	top: 0;
+	left: 100%;
+	-webkit-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	-moz-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	-o-transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	transition: all .5s cubic-bezier(0.455, 0.030, 0.515, 0.955);
+	opacity: 0;
+	width: 100%;
+}
+
+.instant-opaque {
+	opacity: 1;
+}
+
+.instant-transparent {
+	opacity: 0;
+}
+
+.fade-out {
+	opacity: 0;
+	transition: opacity 1s;
+}
+
+.fade-in {
+	opacity: 1;
+	transition: opacity 1s;
+}
+
