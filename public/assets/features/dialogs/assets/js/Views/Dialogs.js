@@ -6,27 +6,21 @@ Package('Sapphire.Views', {
 		initialize : function()
 		{
 			this.parent();
+			this.hideDialog.delay(1, this);
 
 			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoadDialog.bind(this));
 			SAPPHIRE.application.listenDialogEvent('show', '', this.onShowDialog.bind(this));
 			SAPPHIRE.application.listenDialogEvent('hide', '', this.onHideDialog.bind(this));
-			SAPPHIRE.application.listenDialogEvent('willShow', '', this.onWillShow.bind(this));
-			SAPPHIRE.application.listenDialogEvent('willHide', '', this.onWillHide.bind(this));
-			SAPPHIRE.application.listenDialogEvent('willShow', '', this.moveDialog.bind(this));
+			SAPPHIRE.application.listenDialogEvent('willShow', '', this.onDialogWillShow.bind(this));
+			SAPPHIRE.application.listenDialogEvent('willHide', '', this.onDialogWillHide.bind(this));
 
 			$('#dialog-overlay').click(this.onOverlayClick.bind(this));
-
-			this.initializeAnimator(500, false);
+			this.duration = 250;
 		},
 
-		getHideTransition : function(name)
+		setDuration : function(duration)
 		{
-			return 'fadeOut';
-		},
-
-		getTransition : function(oldName, newName)
-		{
-			return 'fadeIn';
+			this.duration = duration;
 		},
 
 		hideDialog : function()
@@ -34,16 +28,28 @@ Package('Sapphire.Views', {
 			$(document.body).removeClass('dialog-open');
 		},
 
-		moveDialog : function(newPage, oldPage, callback)
+		moveDialog : function(page)
 		{
 			var top = $(document).scrollTop();
 
 			$(document.body).addClass('dialog-open');
 
-			newPage.selector.css('top', (top + 20) + 'px');
-			newPage.selector.css('position', 'relative');
+			page.selector.css('top', (top + 20) + 'px');
+			page.selector.css('position', 'relative');
+		},
 
+		onDialogWillShow : function(newPage, oldPage, callback)
+		{
+			this.moveDialog(newPage);
+			newPage.selector.removeClass('hidden');
 			callback();
+		},
+
+		onDialogWillHide : function(page, callback)
+		{
+			this.hideDialog();
+			Q.delay(this.duration)
+				.then(callback);
 		},
 
 		onShowDialog : function(dialog, deferred)

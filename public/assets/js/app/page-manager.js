@@ -113,7 +113,6 @@ Package('Sapphire', {
 			var oldPageSelector = null;
 			var newPage = page;
 
-			console.log('showPage', name, passed, page, this.transitioning);
 			if (page == undefined) return Q(false);
 			if (this.transitioning) return Q(false);
 
@@ -274,8 +273,6 @@ Package('Sapphire', {
 		{
 			var deferred = Q.defer();
 			var page = this.pages[name];
-
-			console.log('loadPage', name, page);
 
 			if (page.selector) return Q(false);
 			else

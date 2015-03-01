@@ -17,7 +17,7 @@ Package('Sapphire.Views.Mixins', {
 			selector.removeClass(allTransitionClasses);
 		},
 
-		crossFade : function(oldPage, newPage)
+		crossFade : function(from, to)
 		{
 			SAPPHIRE.application.fire('onAnimation', 'cross');
 
@@ -25,68 +25,67 @@ Package('Sapphire.Views.Mixins', {
 			this.resetState(oldPage.selector);
 			this.resetState(newPage.selector);
 
-			oldPage.selector.addClass('instant-opaque');
-			oldPage.selector.addClass('instant-onscreen');
+			from.addClass('instant-opaque');
+			from.addClass('instant-onscreen');
 
-			newPage.selector.addClass('instant-onscreen');
-			newPage.selector.addClass('instant-transparent');
-
-		// let the dom settle
-			return Q.delay(1)
-				.then(function()
-				{
-					newPage.selector.removeClass('instant-transparent');
-					oldPage.selector.removeClass('instant-opaque');
-
-					newPage.selector.addClass('fade-in');
-					oldPage.selector.addClass('fade-out');
-
-					return Q(true);
-				}.bind(this))
-		},
-
-		fadeIn : function(page)
-		{
-		// set initial states
-			this.resetState(page.selector);
-
-			page.selector.addClass('instant-onscreen');
-			page.selector.addClass('instant-transparent');
+			to.addClass('instant-onscreen');
+			to.selector.addClass('instant-transparent');
 
 		// let the dom settle
 			return Q.delay(1)
 				.then(function()
 				{
-					page.selector.removeClass('instant-transparent');
-					page.selector.addClass('fade-in');
+					to.selector.removeClass('instant-transparent');
+					from.selector.removeClass('instant-opaque');
+
+					to.selector.addClass('fade-in');
+					from.selector.addClass('fade-out');
+
 					return Q(true);
 				}.bind(this))
 		},
 
-		fadeOut : function(page)
+		fadeIn : function(selector)
 		{
 		// set initial states
-			this.resetState(page.selector);
+			this.resetState(selector);
 
-			page.selector.addClass('instant-opaque');
-			page.selector.addClass('instant-onscreen');
+			selector.addClass('instant-onscreen');
+			selector.addClass('instant-transparent');
 
 		// let the dom settle
 			return Q.delay(1)
 				.then(function()
 				{
-					page.selector.removeClass('instant-opaque');
-					page.selector.addClass('fade-out');
+					selector.addClass('fade-in');
+					return Q(true);
+				}.bind(this))
+		},
+
+		fadeOut : function(selector)
+		{
+		// set initial states
+			this.resetState(selector);
+
+			selector.addClass('instant-opaque');
+			selector.addClass('instant-onscreen');
+
+		// let the dom settle
+			return Q.delay(1)
+				.then(function()
+				{
+					selector.removeClass('instant-opaque');
+					selector.addClass('fade-out');
 
 					return Q(true);
 				}.bind(this))
 		},
 
-		moveLeft : function(oldPage, newPage)
+		moveLeft : function(from, to)
 		{
 		// set initial states
-			oldPage.selector.addClass('instant-onscreen');
-			newPage.selector.addClass('offscreen-right');
+			from.addClass('instant-onscreen');
+			to.addClass('offscreen-right');
 
 		// let the dom settle
 			return Q.delay(1)
@@ -94,20 +93,20 @@ Package('Sapphire.Views.Mixins', {
 				{
 					SAPPHIRE.application.fire('animation', 'left');
 
-					newPage.selector.removeClass('offscreen-right');
-					newPage.selector.addClass('onscreen');
+					to.removeClass('offscreen-right');
+					to.addClass('onscreen');
 
-					oldPage.selector.addClass('move-offscreen-left');
-					oldPage.selector.removeClass('instant-onscreen');
+					from.addClass('move-offscreen-left');
+					from.removeClass('instant-onscreen');
 					return Q(true);
 				}.bind(this));
 		},
 
-		moveRight : function(oldPage, newPage)
+		moveRight : function(from, to)
 		{
 		// set initial states
-			newPage.selector.addClass('offscreen-left');
-			oldPage.selector.addClass('instant-onscreen');
+			to.addClass('offscreen-left');
+			from.addClass('instant-onscreen');
 
 		// let the dom settle
 			return Q.delay(1)
@@ -115,22 +114,21 @@ Package('Sapphire.Views.Mixins', {
 				{
 					SAPPHIRE.application.fire('animation', 'right');
 
-					newPage.selector.removeClass('offscreen-left');
-					newPage.selector.addClass('onscreen');
+					to.removeClass('offscreen-left');
 
-					oldPage.selector.addClass('move-offscreen-right');
+					from.addClass('onscreen');
+					from.addClass('move-offscreen-right');
 					return Q(true);
 				}.bind(this));
 		},
 
-		effectDone : function(oldPage, newPage)
+		effectDone : function(from, to)
 		{
-			console.log('effectDone', oldPage, newPage);
 			return Q.delay(1)
 				.then(function()
 				{
-					if (oldPage) this.resetState(oldPage.selector);
-					this.resetState(newPage.selector);
+					if (from) this.resetState(from);
+					this.resetState(to);
 				}.bind(this));
 		},
 
@@ -162,22 +160,22 @@ Package('Sapphire.Views.Mixins', {
 			switch (transition)
 			{
 				case 'fadeIn':
-					promise = this.fadeIn(newPage);
+					promise = this.fadeIn(newPage.selector);
 					break;
 				case 'crossfade':
-					promise = this.crossFade(oldPage, newPage);
+					promise = this.crossFade(oldPage.selector, newPage.selector);
 					break;
 				case 'moveLeft':
-					promise = this.moveLeft(oldPage, newPage);
+					promise = this.moveLeft(oldPage.selector, newPage.selector);
 					break;
 				case 'moveRight':
-					promise = this.moveRight(oldPage, newPage);
+					promise = this.moveRight(oldPage.selector, newPage.selector);
 					break;
 			}
 
 			promise
 				.delay(this.duration)
-				.then(this.effectDone.bind(this, oldPage, newPage))
+				.then(this.effectDone.bind(this, oldPage.selector, newPage.selector))
 				.then(function()
 				{
 					callback();
@@ -196,13 +194,13 @@ Package('Sapphire.Views.Mixins', {
 			switch (transition)
 			{
 				case 'fadeOut':
-					promise = this.fadeOut(page);
+					promise = this.fadeOut(page.selector);
 					break;
 			}
 
 			promise
 				.delay(this.duration)
-				.then(this.effectDone.bind(this, undefined, page))
+				.then(this.effectDone.bind(this, undefined, page.selector))
 				.then(function()
 				{
 					callback();

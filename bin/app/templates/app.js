@@ -5,7 +5,6 @@ function main(req, res, app)
 {
 	app.addCSS([
 		'/{app}/assets/css/{app}.css',
-		'/{app}/assets/css/dialogs.css',
 	]);
 
 	app.addJS([

@@ -16,7 +16,9 @@
 	display: inline-block;
 	opacity: 0;
 	-moz-opacity:0;
-	filter:alpha(opacity=50);
+	filter:alpha(opacity=0);
+	transition:visibility 0s linear 0.25s,opacity 0.25s linear;
+
 }
 
 #dialogs {
@@ -47,21 +49,28 @@
 	padding: 0 40px;
 	z-index: 10;
 	color: white;
+	visibility: hidden;
+	opacity: 0;
+	transition:visibility 0s linear 0.25s,opacity 0.25s linear;
 }
 
-.dialog-open #dialog-overlay .dialog {
+/*
+ .dialog-open #dialog-overlay .dialog {
 	visbility: visible;
 	opacity: 1;
+	transition: opacity 5s, visiblility 5s;
 }
-
+*/
 .dialog-open #dialog-overlay {
 	opacity: 0.65;
 	visibility: visible;
+	transition-delay:0s;
 }
 
 .dialog-open .dialog {
-	display: inline-block;
 	visibility: visible;
+	opacity: 1;
+	transition-delay:0s;
 }
 
 .dialog p {

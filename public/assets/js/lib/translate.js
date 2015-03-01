@@ -185,7 +185,7 @@ Package('Sapphire', {
 			finish();
 		},
 
-		onLoad : function(type, selector)
+		onLoad : function(type, name, selector)
 		{
 			if (!this.started) this.waiting.push(selector);
 			else this.translateSelector(selector);
