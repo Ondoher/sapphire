@@ -87,9 +87,13 @@ Package('Sapphire', {
 		Parameters:
 			file			- the file to be added
 	*/
-		addLoadedScript : function(file)
+		addLoadedScript : function(files)
 		{
-			this.loadedScripts.push(file);
+			files.each(function(file)
+			{
+				this.loadedScripts.push(file);
+			}, this);
+
 		},
 
 	/**********************************************************************************
@@ -100,9 +104,12 @@ Package('Sapphire', {
 		Parameters:
 			file			- the file to be added
 	*/
-		addLoadedCSS : function(file)
+		addLoadedCSS : function(files)
 		{
-			this.loadedCSS.push(file);
+			files.each(function(file)
+			{
+				this.loadedCSS.push(file)
+			}, this);
 		},
 
 
@@ -169,7 +176,7 @@ Package('Sapphire', {
 			script = list[0];
 			list.splice(0, 1);
 
-			this.addLoadedScript(script);
+			this.addLoadedScript([script]);
 
 			return this.loadScript(script)
 				.delay(1)
@@ -213,7 +220,7 @@ Package('Sapphire', {
 			css = this.getUnloadedCSS(css);
 			css.each(function(css)
 			{
-				this.addLoadedCSS(css); // make global loader
+				this.addLoadedCSS([css]); // make global loader
 				if (document.createStyleSheet)
 				{
 					document.createStyleSheet(css);
