@@ -1,16 +1,17 @@
 
-usage: sapphire install|page|dialog|feature|vc app name [path]
+usage: sapphire [install] | [app] <app> | [page|dialog|feature] <app> <name> | [vc] <app> <name> (<path>)
 
 Use to create the necessary boiler plate for sapphire features
 
-options:
-     install   - creates an installation of sapphire in the current directory (not implemented)
-     app       - creates a new application  (not implemented)
-     page      - creates a new page feature in the specified application
-     dialog    - creates a new dialog in the specified application
-     feature   - creates a new feature in the specified application
-     vc        - creates a new empty view and controller, can specify the path to the assets folder
-     app       - the name of the application
-     name      - the name of the page/dialog/feature
-     path      - used for vc to set the parent path of the assets folder
+commands:
+      install   - creates an installation of sapphire in the current directory
+      app       - creates a new application
+      page      - given an app creates a new page feature in the specified application
+      dialog    - given an app creates a new dialog in the specified application
+      feature   - given an app creates a new feature in the specified application
+      vc        - creates a new empty view and controller, can specify the path to the assets folder
 
+arguments:
+      app       - the name of the application
+      name      - the name of the page/dialog/feature/vc
+      path      - used for vc to set the parent path of the assets folder
