@@ -8,7 +8,8 @@ commands:
       app       - creates a new application
       page      - given an app creates a new page feature in the specified application
       dialog    - given an app creates a new dialog in the specified application
-      feature   - given an app creates a new feature in the specified application
+      window    - given an app creates a new window in the specified application
+      feature   - given an app creates a new feature in the  specified application
       vc        - creates a new empty view and controller, can specify the path to the assets folder
 
 arguments:

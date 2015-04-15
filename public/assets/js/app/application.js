@@ -29,6 +29,8 @@ Package('Sapphire', {
 			this.parent();
 			this.pages = new Sapphire.PageManager(true);
 			this.dialogs = new Sapphire.PageManager(false);
+			this.windows = new Sapphire.PageManager(false);
+			this.windows.setMulti(true);
 			this.panels = $H({});
 
 			this.startPage = '';
@@ -67,6 +69,21 @@ Package('Sapphire', {
 		addDialog : function(spec)
 		{
 			this.dialogs.addPage(spec);
+		},
+
+	/**********************************************************************************'
+		Method: addWindow
+
+		The builder will insert a JavaScript snippet to call this function for every
+		window that has been added. Windows are html templates that can have multiple copies
+		and will persist until hidden.
+
+		Parameters:
+			spec    - the specification for the window
+	*/
+		addWindow : function(spec)
+		{
+			this.windows.addPage(spec);
 		},
 
 		addPanel : function(name, spec)
@@ -146,6 +163,24 @@ Package('Sapphire', {
 		},
 
 	/**********************************************************************************'
+		Method: showWindow
+
+		Call this method to show a window. Any windows already shown will remain shown.
+		Show events will be fired once the dialog has been added back into the DOM.
+		The name should be the name of the window template
+
+		Parameters:
+			name    - the name of the window
+			...     - Any arguments passed after name will be passed to any listeners for
+					  this dialog
+	*/
+		showWindow : function(name)
+		{
+		    var passed = Array.prototype.slice.call(arguments, 1);
+			this.windows.showPage(name, passed);
+		},
+
+	/**********************************************************************************'
 		Method: showDialog
 
 		Call this method to show a dialog. Any dialogs already shown will remain shown.
@@ -174,12 +209,23 @@ Package('Sapphire', {
 
 		Parameters:
 			name    - the name of the page
-			...     - Any arguments passed after name will be passed to any listeners for
-					  this page
 	*/
 		hideDialog : function(name)
 		{
 			return this.dialogs.hidePage(name);
+		},
+
+	/**********************************************************************************'
+		Method: hideWindow
+
+		Call this method to hide a dialog. This method must be called for all windows shown
+
+		Parameters:
+			name    - the name of the window as passed to the new event
+	*/
+		hideDialog : function(name)
+		{
+			return this.windows.hidePage(name);
 		},
 
 	/**********************************************************************************'
@@ -242,6 +288,12 @@ Package('Sapphire', {
 		{
 			if (which) this.dialogs.listenPageEvent(event, which, callback)
 			else this.dialogs.listenGlobalEvent(event, callback);
+		},
+
+		listenWindowEvent : function(event, which, callback)
+		{
+			if (which) this.windows.listenPageEvent(event, which, callback)
+			else this.windows.listenGlobalEvent(event, callback);
 		},
 
 		listenPanelEvent : function(event, set, which, callback)

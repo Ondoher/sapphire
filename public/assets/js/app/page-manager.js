@@ -39,6 +39,7 @@ Package('Sapphire', {
 			this.primary = primary;
 			this.pages = $({});
 			this.currentPage = undefined;
+			this.multi = false;
 		},
 
 	/**********************************************************************************
@@ -55,6 +56,11 @@ Package('Sapphire', {
 		setContainer : function(container)
 		{
 			this.container = container;
+		},
+
+		setMulti : function(on)
+		{
+			this.multi = on;
 		},
 
 	/**********************************************************************************
@@ -112,6 +118,7 @@ Package('Sapphire', {
 			var oldPage = null;
 			var oldPageSelector = null;
 			var newPage = page;
+			var pageName = name;
 
 			if (page == undefined) return Q(false);
 			if (this.transitioning) return Q(false);
@@ -124,7 +131,7 @@ Package('Sapphire', {
 			if (!canShow) return Q(false);
 
 		// don't reshow the current page
-			if (this.currentPage == name && passedJSON == this.passedJSON) return Q(true);
+			if (!this.multi && this.currentPage == name && passedJSON == this.passedJSON) return Q(true);
 
 			this.transitioning = true;
 
@@ -132,6 +139,17 @@ Package('Sapphire', {
 			return this.loadPage(name)
 				.then(function(loaded)
 				{
+					if (this.multi)
+					{
+						name = name + '_' + this.nextId
+						this.nextId++;
+
+						this.pages[name] = Object.clone(page);
+						this.pages[name].selector = page.selector.clone(true, true);
+
+						page = this.pages[name];
+					}
+
 				// add the page into the dom, but add the class hidden to it first
 					page.selector.addClass('hidden');
 					if (!page.dontPrune || !page.shown) this.container.append(page.selector);
@@ -153,12 +171,19 @@ Package('Sapphire', {
 							this.passedJSON = passedJSON
 							this.currentPage = name;
 
+							if (this.multi)
+							{
+								passed.unshift(name);
+								this.fireArgs('new', passed);
+							}
+
+
 							page.selector.removeClass('hidden');
 							if (!page.shown) this.fireArgs('firstShow.' + name, passed);
 
 							page.shown = true;
 
-							this.fireArgs('show.' + name, passed);
+							this.fireArgs('show.' + pageName, passed);
 
 							passed.splice(0, 0, name)
 							this.fireArgs('show', passed);
@@ -200,6 +225,7 @@ Package('Sapphire', {
 		hideCurrentPage : function()
 		{
 			if (!this.currentPage) return Q(false);
+			if (this.multi) return Q(false);
 
 			return this.hidePage(this.currentPage);
 		},
