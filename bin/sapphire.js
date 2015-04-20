@@ -66,10 +66,13 @@ function replaceNames(text, names)
 
 function processOne(folder, spec, names)
 {
-
+    console.log('processOne', folder, spec, names)
 	var fullPath = unDos(fs.realpathSync('./') + '/' + spec.path);
 	var justPath = path.dirname(fullPath);
 	var templateFile = thisDir + folder + '/templates/' + spec.template;
+    console.log(justPath, fullPath);
+
+
 	mkdirp.sync(justPath);
 
 // do not overwrite existing files
@@ -119,7 +122,7 @@ function getNames(params)
 
 function getPath(params, which)
 {
-	var path = '';
+    var path = (params.length > which)?'':params[1];
 	if (params.length != which + 1) return path;
 	path += '/' + params[which];
 
