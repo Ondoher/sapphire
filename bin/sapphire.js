@@ -119,7 +119,7 @@ function getNames(params)
 
 function getPath(params, which)
 {
-	var path = params[1];
+	var path = '';
 	if (params.length != which + 1) return path;
 	path += '/' + params[which];
 
