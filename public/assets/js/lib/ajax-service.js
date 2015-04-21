@@ -13,9 +13,10 @@ Fires:
 
 Package('Sapphire.Services', {
 	AjaxService : new Class({
-		initializeAjaxService : function(useSessionHeader)
+		initializeAjaxService : function(useSessionHeader, useCsrf)
 		{
 			this.useSessionHeader = (useSessionHeader === undefined)?false:useSessionHeader;
+			this.useCsrf = (useCsrf === undefined)?true:useCsrf;
 			this.sessionId = undefined;
 			this.headers = {};
 		},
@@ -40,7 +41,7 @@ Package('Sapphire.Services', {
 			var headers = Object.merge({}, this.headers, headers);
 			var type = 'json';
 			var csrfCode = Cookie.read('sapphire-csrf');
-			if (csrfCode) data.csrfCode = csrfCode;
+			if (csrfCode && this.useCsrf) data.csrfCode = csrfCode;
 
 			method = (method=== undefined)?'POST':method;
 			method = (SAPPHIRE.forceMethod !== false)?SAPPHIRE.forceMethod:method;
@@ -54,7 +55,11 @@ Package('Sapphire.Services', {
 				success: this.onAjaxSuccess.bind(this, deferred),
 				type: method,
 				url: which,
-				timeout : this.timeout
+				timeout : this.timeout,
+				xhrFields: {
+					withCredentials: true
+				}
+
 			});
 
 			return deferred.promise;
