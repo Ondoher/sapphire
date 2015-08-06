@@ -139,13 +139,14 @@ Package('Sapphire', {
 			return this.loadPage(name)
 				.then(function(loaded)
 				{
-					if (this.multi)
+                    if (this.multi || page.clone)
 					{
 						name = name + '_' + this.nextId
 						this.nextId++;
 
 						this.pages[name] = Object.clone(page);
 						this.pages[name].selector = page.selector.clone(true, true);
+                        this.pages[name].clone = false;
 
 						page = this.pages[name];
 					}
