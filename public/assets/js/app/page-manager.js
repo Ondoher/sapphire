@@ -40,6 +40,7 @@ Package('Sapphire', {
 			this.pages = $({});
 			this.currentPage = undefined;
 			this.multi = false;
+            this.nextId = 0;
 		},
 
 	/**********************************************************************************
@@ -139,16 +140,22 @@ Package('Sapphire', {
 			return this.loadPage(name)
 				.then(function(loaded)
 				{
+                    var newName = name;
+                    var oldName = name;
+                    var cloned = false;
+
                     if (this.multi || page.clone)
 					{
-						name = name + '_' + this.nextId
+                        oldName = name;
+                        newName = name + '_' + this.nextId
 						this.nextId++;
 
-						this.pages[name] = Object.clone(page);
-						this.pages[name].selector = page.selector.clone(true, true);
-                        this.pages[name].clone = false;
+                        this.pages[newName] = Object.clone(page);
+                        this.pages[newName].selector = page.selector.clone(true, true);
+                        this.pages[newName].clone = false;
 
-						page = this.pages[name];
+                        page = this.pages[newName];
+                        cloned = true;
 					}
 
 				// add the page into the dom, but add the class hidden to it first
@@ -157,9 +164,11 @@ Package('Sapphire', {
 
 					if (loaded)
 					{
-						this.fire('load', name, page.selector);
-						this.fire('load.' + name, page.selector);
+                        this.fire('load', name, page.selector, newName);
+                        this.fire('load.' + name, page.selector, newName);
 					}
+
+                    name = newName;
 
 					oldPage = this.pages[this.currentPage];
 
@@ -172,22 +181,21 @@ Package('Sapphire', {
 							this.passedJSON = passedJSON
 							this.currentPage = name;
 
-							if (this.multi)
+                            if (cloned)
 							{
-								passed.unshift(name);
-								this.fireArgs('new', passed);
+                                var args = [oldName, name, page.selector].concat(passed);
+                                this.fireArgs('new', args);
 							}
-
 
 							page.selector.removeClass('hidden');
 							if (!page.shown) this.fireArgs('firstShow.' + name, passed);
-
 							page.shown = true;
 
 							this.fireArgs('show.' + pageName, passed);
 
 							passed.splice(0, 0, name)
 							this.fireArgs('show', passed);
+
 
 							this.transitioning = false;
 							return Q(true);
