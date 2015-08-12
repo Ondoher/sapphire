@@ -30,7 +30,7 @@ Package('Sapphire', {
 		This is the constructor for the class.
 
 		Parameters:
-			primary   - true if this is the primary page manager, usually resevered for pages
+			primary	  - true if this is the primary page manager, usually resevered for pages
 
 	*/
 		initialize: function(primary)
@@ -40,7 +40,7 @@ Package('Sapphire', {
 			this.pages = $({});
 			this.currentPage = undefined;
 			this.multi = false;
-            this.nextId = 0;
+			this.nextId = 0;
 		},
 
 	/**********************************************************************************
@@ -51,7 +51,7 @@ Package('Sapphire', {
 		element will be deleted.
 
 		Parameters:
-			container     - The DOM node to put the pages in
+			container	  - The DOM node to put the pages in
 
 	*/
 		setContainer : function(container)
@@ -70,8 +70,8 @@ Package('Sapphire', {
 		This method adds a page to the list of pages to be named.
 
 		Parameters:
-			name        - The name of the page
-			spec        - information about the page itself
+			name		- The name of the page
+			spec		- information about the page itself
 	*/
 		addPage : function(spec)
 		{
@@ -108,8 +108,8 @@ Package('Sapphire', {
 		exclusive is true, then the current page will be hidden first.
 
 		Parameters:
-			name        - The name of the page
-			passed      - the variables that were passed to the show method of the application
+			name		- The name of the page
+			passed		- the variables that were passed to the show method of the application
 	*/
 		showPage : function(name, passed)
 		{
@@ -140,22 +140,22 @@ Package('Sapphire', {
 			return this.loadPage(name)
 				.then(function(loaded)
 				{
-                    var newName = name;
-                    var oldName = name;
-                    var cloned = false;
+					var newName = name;
+					var oldName = name;
+					var cloned = false;
 
-                    if (this.multi || page.clone)
+					if (this.multi || page.clone)
 					{
-                        oldName = name;
-                        newName = name + '_' + this.nextId
+						oldName = name;
+						newName = name + '_' + this.nextId
 						this.nextId++;
 
-                        this.pages[newName] = Object.clone(page);
-                        this.pages[newName].selector = page.selector.clone(true, true);
-                        this.pages[newName].clone = false;
+						this.pages[newName] = Object.clone(page);
+						this.pages[newName].selector = page.selector.clone(true, true);
+						this.pages[newName].clone = false;
 
-                        page = this.pages[newName];
-                        cloned = true;
+						page = this.pages[newName];
+						cloned = true;
 					}
 
 				// add the page into the dom, but add the class hidden to it first
@@ -164,11 +164,11 @@ Package('Sapphire', {
 
 					if (loaded)
 					{
-                        this.fire('load', name, page.selector, newName);
-                        this.fire('load.' + name, page.selector, newName);
+						this.fire('load', name, page.selector, newName);
+						this.fire('load.' + name, page.selector, newName);
 					}
 
-                    name = newName;
+					name = newName;
 
 					oldPage = this.pages[this.currentPage];
 
@@ -181,10 +181,10 @@ Package('Sapphire', {
 							this.passedJSON = passedJSON
 							this.currentPage = name;
 
-                            if (cloned)
+							if (cloned)
 							{
-                                var args = [oldName, name, page.selector].concat(passed);
-                                this.fireArgs('new', args);
+								var args = [oldName, name, page.selector].concat(passed);
+								this.fireArgs('new', args);
 							}
 
 							page.selector.removeClass('hidden');
@@ -205,7 +205,7 @@ Package('Sapphire', {
 
 		show : function(name)
 		{
-		 	var passed = Array.prototype.slice.call(arguments, 1);
+			var passed = Array.prototype.slice.call(arguments, 1);
 			return this.showPage(name, passed);
 		},
 
@@ -265,9 +265,9 @@ Package('Sapphire', {
 		a single page.
 
 		Parameters:
-			event       - The event to listen for
-			name 		- The page having the event fired
-			callback    - The function to call when fired
+			event		- The event to listen for
+			name		- The page having the event fired
+			callback	- The function to call when fired
 	*/
 		listenPageEvent : function(event, name, callback)
 		{
@@ -285,8 +285,8 @@ Package('Sapphire', {
 		for all pages
 
 		Parameters:
-			event        - The event to listen for
-			callback     - The function to vall when fired
+			event		 - The event to listen for
+			callback	 - The function to vall when fired
 	*/
 		listenGlobalEvent : function(event, callback)
 		{
