@@ -122,38 +122,43 @@ Package('Sapphire', {
 			}.bind(this), 1);
 		},
 
-        loadScript : function(url)
+		loadScript : function(url)
 		{
 			var deferred = Q.defer();
-            if(!url || !(typeof url === 'string')){return};
+			if(!url || !(typeof url === 'string')){return};
 
-            var script = document.createElement('script');
+			var script = document.createElement('script');
 
 		//if this is IE8 and below, handle onload differently
-            if(typeof document.attachEvent === "object")
+			if(typeof document.attachEvent === "object")
 			{
-                script.onreadystatechange = function()
+				script.onreadystatechange = function()
 				{
-                //once the script is loaded resolve the promise
-                    if (script.readyState === 'loaded' || script.readyState == 'complete')
+				//once the script is loaded resolve the promise
+					if (script.readyState === 'loaded' || script.readyState == 'complete')
 					{
 						deferred.resolve(true);
-                    };
-                };
-            }
+					};
+				};
+			}
 			else
 			{
-            //this is not IE8 and below, so we can actually use onload
-                script.onload = function()
+			//this is not IE8 and below, so we can actually use onload
+				script.onload = function()
 				{
-                //once the script is loaded resolve the promise
+				//once the script is loaded resolve the promise
 					deferred.resolve(true);
-                };
-            };
+				};
+				script.onerror = function()
+				{
+				//once the script is loaded resolve the promise
+					deferred.resolve(true);
+				};
+			};
 
-        //create the script and add it to the DOM
-            script.src = url;
-            document.getElementsByTagName('head')[0].appendChild(script);
+		//create the script and add it to the DOM
+			script.src = url;
+			document.getElementsByTagName('head')[0].appendChild(script);
 
 			return deferred.promise;
 		},
@@ -191,7 +196,7 @@ Package('Sapphire', {
 
 		Parameters:
 			scripts			- an array of javascript files
-			callback     	- The function to call when the markup has CSS loaded
+			callback		- The function to call when the markup has CSS loaded
 
 		Returns:
 			a promise that will be fulfilled when the markup has been loaded
