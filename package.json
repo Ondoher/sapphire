@@ -1,6 +1,6 @@
 {
   "name": "sapphire-express",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Single Page Application Framework",
   "main": "server.js",
   "bin": {
@@ -10,6 +10,7 @@
     "body-parser": "^1.11.0",
     "compression": "^1.2.1",
     "cookies": "^0.3.8",
+    "cors": "^2.7.1",
     "express": "^4.11.2",
     "highlight.js": "^8.8.0",
     "memcached": "^0.2.8",
