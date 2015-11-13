@@ -18,7 +18,7 @@ function unDos(filepath)
 		filepath = filepath.slice(2);
 	}
 */
-  	filepath = filepath.replace(/\\/g, '/');
+	filepath = filepath.replace(/\\/g, '/');
 	return filepath;
 }
 
@@ -66,11 +66,10 @@ function replaceNames(text, names)
 
 function processOne(folder, spec, names)
 {
-    console.log('processOne', folder, spec, names)
+	console.log('processOne', folder, spec, names)
 	var fullPath = unDos(fs.realpathSync('./') + '/' + spec.path);
 	var justPath = path.dirname(fullPath);
 	var templateFile = thisDir + folder + '/templates/' + spec.template;
-    console.log(justPath, fullPath);
 
 
 	mkdirp.sync(justPath);
@@ -78,10 +77,8 @@ function processOne(folder, spec, names)
 // do not overwrite existing files
 	if (fs.existsSync(fullPath)) return;
 
-	template =  fs.readFileSync(templateFile, {encoding: 'utf-8'});
+	template = fs.readFileSync(templateFile, {encoding: 'utf-8'});
 	template = replaceNames(template, names);
-
-	console.log('writing file', fullPath);
 
 	fs.writeFileSync(fullPath, template);
 }
@@ -122,7 +119,7 @@ function getNames(params)
 
 function getPath(params, which)
 {
-    var path = (params.length > which)?'':params[1];
+	var path = (params.length > which)?'':params[1];
 	if (params.length != which + 1) return path;
 	path += '/' + params[which];
 
@@ -137,8 +134,6 @@ function makeInstall()
 	var destination = process.cwd();
 	var source = thisDir;
 
-	console.log(source + '../node_modules/', destination + '/node_modules');
-
 	ncp(source + '../lib/files', destination, function()
 	{
 	});
@@ -148,6 +143,10 @@ switch (params[0])
 {
 	case 'install':
 		makeInstall();
+		var names = {}
+		names.cwd = process.cwd();
+		names.path = getPath(params, 2);
+		processManifest('install', names);
 		break;
 
 	case 'app':
