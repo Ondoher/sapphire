@@ -66,7 +66,6 @@ function replaceNames(text, names)
 
 function processOne(folder, spec, names)
 {
-	console.log('processOne', folder, spec, names)
 	var fullPath = unDos(fs.realpathSync('./') + '/' + spec.path);
 	var justPath = path.dirname(fullPath);
 	var templateFile = thisDir + folder + '/templates/' + spec.template;
@@ -128,9 +127,6 @@ function getPath(params, which)
 
 function makeInstall()
 {
-	console.log('this dir', thisDir);
-	console.log('curr dir', process.cwd());
-
 	var destination = process.cwd();
 	var source = thisDir;
 

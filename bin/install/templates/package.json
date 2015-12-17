@@ -1,0 +1,9 @@
+{
+  "name": "Sapphire-Installation",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "q": "^1.4.1",
+    "sapphire-express": "~0.1.4"
+  }
+}
