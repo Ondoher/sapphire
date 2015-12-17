@@ -1,7 +1,7 @@
 Sapphire
 ========
 
-Framework for building single page applications in node.js
+Sapphire is a node.js application framework, specifically designed for the creation of Single Page Applications (SPA). These applications have a number of special considerations over more traditional web applications, for example, hot loading of parts of the application when they are needed, construction of the application from multiple sources, AJAX service functions to perform backend actions and retrieve updated data, and a front end API that ties it all together.
 
 For full documentation of Sapphire, check out the [Sapphire Site](http://sapphire.uber-geek.com/docs).
 
