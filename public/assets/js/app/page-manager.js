@@ -160,6 +160,11 @@ Package('Sapphire', {
 
 				// add the page into the dom, but add the class hidden to it first
 					page.selector.addClass('hidden');
+					if (page.dontPrune)
+					{
+						page.selector.css('position', 'static');
+						page.selector.css('right', '0px');
+					}
 					if (!page.dontPrune || !page.shown) this.container.append(page.selector);
 
 					if (loaded)
@@ -221,10 +226,13 @@ Package('Sapphire', {
 
 					if (this.primary)
 						$(document.body).removeClass(name);
-					if (!page.prune)
+					if (!page.dontPrune)
 						page.selector.detach();
 					else
-						page.selector.css('display', 'none');
+					{
+						page.selector.css('right', '100%');
+						page.selector.css('position', 'absolute');
+					}
 
 					this.currentPage = '';
 					return Q(true);

@@ -223,9 +223,22 @@ Package('Sapphire', {
 		Parameters:
 			name    - the name of the window as passed to the new event
 	*/
-		hideDialog : function(name)
+		hideWindow : function(name)
 		{
 			return this.windows.hidePage(name);
+		},
+
+	/**********************************************************************************'
+		Method: hidePage
+
+		Call this method to hide a dialog. This method must be called for all windows shown
+
+		Parameters:
+			name    - the name of the window as passed to the new event
+	*/
+		hidePage : function(name)
+		{
+			return this.pages.hidePage(name);
 		},
 
 	/**********************************************************************************'
