@@ -179,7 +179,7 @@ Package('Sapphire', {
 
 				// fire the willShow event, passing both the new page and the old. This allows the application to animate the transition.
 					return this.fireEventAndWait('willShow', [page, oldPage])
-						.then(this.hideCurrentPage.bind(this))
+						.then(this.hideCurrentPage.bind(this, name))
 						.then(function()
 						{
 							if (this.primary) $(document.body).addClass(name);
@@ -239,9 +239,10 @@ Package('Sapphire', {
 				}.bind(this));
 		},
 
-		hideCurrentPage : function()
+		hideCurrentPage : function(name)
 		{
 			if (!this.currentPage) return Q(false);
+			if (this.currentPage === name) return Q(false);
 			if (this.multi) return Q(false);
 
 			return this.hidePage(this.currentPage);
