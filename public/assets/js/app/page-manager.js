@@ -37,7 +37,7 @@ Package('Sapphire', {
 		{
 			this.parent();
 			this.primary = primary;
-			this.pages = $({});
+			this.pages = {};
 			this.currentPage = undefined;
 			this.multi = false;
 			this.nextId = 0;

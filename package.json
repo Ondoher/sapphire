@@ -1,6 +1,6 @@
 {
   "name": "sapphire-express",
-  "version": "0.1.6",
+  "version": "1.0.0",
   "description": "Single Page Application Framework",
   "main": "server.js",
   "bin": {
