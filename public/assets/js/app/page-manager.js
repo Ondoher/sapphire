@@ -41,6 +41,7 @@ Package('Sapphire', {
 			this.currentPage = undefined;
 			this.multi = false;
 			this.nextId = 0;
+			this.loading = {};
 		},
 
 	/**********************************************************************************
@@ -62,6 +63,11 @@ Package('Sapphire', {
 		setMulti : function(on)
 		{
 			this.multi = on;
+		},
+
+		setDetached : function(on)
+		{
+			this.detached = on;
 		},
 
 	/**********************************************************************************
@@ -134,7 +140,7 @@ Package('Sapphire', {
 		// don't reshow the current page
 			if (!this.multi && this.currentPage == name && passedJSON == this.passedJSON) return Q(true);
 
-			this.transitioning = true;
+			// this.transitioning = true;
 
 		// make sure the page is loaded
 			return this.loadPage(name)
@@ -158,14 +164,17 @@ Package('Sapphire', {
 						cloned = true;
 					}
 
-				// add the page into the dom, but add the class hidden to it first
-					page.selector.addClass('hidden');
-					if (page.dontPrune)
+					if (!page.detached)
 					{
-						page.selector.css('position', 'static');
-						page.selector.css('right', '0px');
+					// add the page into the dom, but add the class hidden to it first
+						page.selector.addClass('hidden');
+						if (page.dontPrune)
+						{
+							page.selector.css('position', 'static');
+							page.selector.css('right', '0px');
+						}
+						if (!page.dontPrune || !page.shown) this.container.append(page.selector);
 					}
-					if (!page.dontPrune || !page.shown) this.container.append(page.selector);
 
 					if (loaded)
 					{
@@ -186,9 +195,12 @@ Package('Sapphire', {
 							this.passedJSON = passedJSON
 							this.currentPage = name;
 
+							this.transitioning = false;
+
 							if (cloned)
 							{
 								var args = [oldName, name, page.selector].concat(passed);
+								this.fireArgs('new.' + oldName, args);
 								this.fireArgs('new', args);
 							}
 
@@ -201,8 +213,6 @@ Package('Sapphire', {
 							passed.splice(0, 0, name)
 							this.fireArgs('show', passed);
 
-
-							this.transitioning = false;
 							return Q(true);
 						}.bind(this));
 				}.bind(this));
@@ -217,6 +227,7 @@ Package('Sapphire', {
 		hidePage : function(name)
 		{
 			var page = this.pages[name];
+			if (page.detached) return Q(true);
 
 			return this.fireEventAndWait('willHide', [page])
 				.then(function()
@@ -313,25 +324,40 @@ Package('Sapphire', {
 		Returns:
 			a promise that will be fulfilled when loading is completed
 	*/
-		loadPage : function(name)
+		loadPage : function(name, alias)
 		{
-			var deferred = Q.defer();
-			var page = this.pages[name];
+			function load()
+			{
+				var page = this.pages[alias || name];
 
-			if (page.selector) return Q(false);
+				if (page.selector) return Q(false);
+				else
+				{
+					this.loading[name] = Q.defer();
+					var promises = [];
+
+					promises.push(SAPPHIRE.loader.loadScripts(page.javascript));
+					promises.push(SAPPHIRE.loader.loadCSS(page.css));
+					promises.push(SAPPHIRE.loader.loadMarkup(page));
+
+					return Q.all(promises)
+						.then(function()
+						{
+							this.loading[name].resolve(true);
+							delete this.loading[name];
+							return Q(true);
+						}.bind(this));
+				}
+			}
+
+			var loading = this.loading[name];
+			if (loading) return this.loading[name].promise
+				.then(function() {
+					return load.call(this);
+				}.bind(this));
 			else
 			{
-				var promises = [];
-
-				promises.push(SAPPHIRE.loader.loadScripts(page.javascript));
-				promises.push(SAPPHIRE.loader.loadCSS(page.css));
-				promises.push(SAPPHIRE.loader.loadMarkup(page));
-
-				return Q.all(promises)
-					.then(function()
-					{
-						return Q(true);
-					}.bind(this));
+				return load.call(this);
 			}
 		}
 	})
