@@ -11,9 +11,9 @@ Package('Sapphire', {
 			this.templates = $H({});
 		},
 
-		grab : function()
+		grab : function(selector)
 		{
-			$('.template').each(function(which, element)
+			selector.find('.template').each(function(which, element)
 			{
 				var selector = $(element);
 				var id = selector.attr('id');
@@ -37,7 +37,7 @@ Package('Sapphire', {
 
 		onStart : function(callback)
 		{
-			this.grab();
+			this.grab($(document.body));
 			callback();
 			SAPPHIRE.application.panels.each(function(panel, name)
 			{
@@ -45,9 +45,9 @@ Package('Sapphire', {
 			}, this);
 		},
 
-		onLoad : function(type)
+		onLoad : function(type, name, selector, id)
 		{
-			this.grab();
+			this.grab(selector);
 		}
 	})
 });

@@ -264,6 +264,7 @@ Package('Sapphire', {
 				success: function(response, status, xhr)
 				{
 					page.selector.attr('id', page.name);
+					page.selector.addClass('page-container');
 					page.selector[0].innerHTML = response;
 					deferred.resolve(true);
 				}.bind(this)
