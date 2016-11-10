@@ -31,7 +31,7 @@ function outputInstructions()
 	console.log(instructions);
 };
 
-var commands = ['install', 'page', 'dialog', 'feature', 'window', 'app', 'vc'];
+var commands = ['install', 'page', 'dialog', 'feature', 'window', 'view', 'app', 'vc'];
 
 if (params.length == 0) return outputInstructions();
 if (commands.indexOf(params[0]) == -1) return outputInstructions();
@@ -47,6 +47,7 @@ switch (params[0])
 	case 'page':
 	case 'dialog':
 	case 'window':
+	case 'view':
 	case 'feature':
 		if (params.length < 3 || params.length > 4) return outputInstructions();
 		break;
@@ -168,6 +169,12 @@ switch (params[0])
 		var names = getNames(params);
 		names.path = getPath(params, 3);
 		processManifest('window', names);
+		break;
+
+	case 'view':
+		var names = getNames(params);
+		names.path = getPath(params, 3);
+		processManifest('view', names);
 		break;
 
 	case 'feature':

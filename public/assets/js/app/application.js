@@ -4,7 +4,7 @@
 	A global instance of this class named SAPPHIRE.application manages the basic functions of a JavaScript Application,
 	such as page management and the startup sequence.  Some of these functions will be called automatically using
 	JavaScript snippets inserted when the application was built, see <Application>. Other functions will be called from
-	within your	specific application.
+	within your specific application.
 
 	Extends:
 		<Eventer>
@@ -30,6 +30,7 @@ Package('Sapphire', {
 			this.pages = new Sapphire.PageManager(true);
 			this.dialogs = new Sapphire.PageManager(false);
 			this.windows = new Sapphire.PageManager(false);
+			this.viewPages = new Sapphire.PageManager(false);
 			this.windows.setMulti(true);
 			this.panels = $H({});
 
@@ -49,7 +50,7 @@ Package('Sapphire', {
 		page that has been added.
 
 		Parameters:
-			spec    - the specification of a page
+			spec	- the specification of a page
 	*/
 		addPage : function(spec)
 		{
@@ -64,7 +65,7 @@ Package('Sapphire', {
 		You can have more than one dialog open at any time.
 
 		Parameters:
-			spec    - the specification for the dialog
+			spec	- the specification for the dialog
 	*/
 		addDialog : function(spec)
 		{
@@ -79,11 +80,28 @@ Package('Sapphire', {
 		and will persist until hidden.
 
 		Parameters:
-			spec    - the specification for the window
+			spec	- the specification for the window
 	*/
 		addWindow : function(spec)
 		{
 			this.windows.addPage(spec);
+		},
+
+	/**********************************************************************************'
+		Method: addView
+
+		The builder will insert a JavaScript snippet to call this function for every
+		view that has been added. Views are disconnected pages that will be spercifically managed
+		by the application
+
+		Parameters:
+			spec	- the specification for the view
+	*/
+		addView : function(spec)
+		{
+			spec.clone = true;
+			spec.detached = true;
+			this.viewPages.addPage(spec);
 		},
 
 		addPanel : function(name, spec)
@@ -102,13 +120,13 @@ Package('Sapphire', {
 
 
 		Parameters:
-			name    - the name of the page
-			...     - Any arguments passed after name will be passed to any listeners for
+			name	- the name of the page
+			...		- Any arguments passed after name will be passed to any listeners for
 					  this page
 	*/
 		showPage : function(name)
 		{
-		 	var passed = Array.prototype.slice.call(arguments, 1);
+			var passed = Array.prototype.slice.call(arguments, 1);
 			this.hasShownPage = true;
 			return this.pages.showPage(name, passed);
 		},
@@ -123,13 +141,13 @@ Package('Sapphire', {
 
 
 		Parameters:
-			name    - the name of the page
-			...     - Any arguments passed after name will be passed to any listeners for
+			name	- the name of the page
+			...		- Any arguments passed after name will be passed to any listeners for
 					  this page
 	*/
 		showPanel : function(set, name)
 		{
-		 	var passed = Array.prototype.slice.call(arguments, 1);
+			var passed = Array.prototype.slice.call(arguments, 1);
 			return this.panels[set].showPage(name, passed);
 		},
 
@@ -145,7 +163,7 @@ Package('Sapphire', {
 
 		firePanelEvent : function(event, name)
 		{
-		 	var passed = Array.prototype.slice.call(arguments, 2);
+			var passed = Array.prototype.slice.call(arguments, 2);
 			this.panels[name].fireArgs(event, passed);
 		},
 
@@ -170,13 +188,13 @@ Package('Sapphire', {
 		The name should be the name of the window template
 
 		Parameters:
-			name    - the name of the window
-			...     - Any arguments passed after name will be passed to any listeners for
+			name	- the name of the window
+			...		- Any arguments passed after name will be passed to any listeners for
 					  this dialog
 	*/
 		showWindow : function(name)
 		{
-		    var passed = Array.prototype.slice.call(arguments, 1);
+			var passed = Array.prototype.slice.call(arguments, 1);
 			this.windows.showPage(name, passed);
 		},
 
@@ -187,13 +205,13 @@ Package('Sapphire', {
 		Show events will be fired once the dialog has been added back into the DOM.
 
 		Parameters:
-			name    - the name of the dialog
-			...     - Any arguments passed after name will be passed to any listeners for
+			name	- the name of the dialog
+			...		- Any arguments passed after name will be passed to any listeners for
 					  this dialog
 	*/
 		showDialog : function(name)
 		{
-		    var passed = Array.prototype.slice.call(arguments, 1);
+			var passed = Array.prototype.slice.call(arguments, 1);
 			var deferred = Q.defer();
 			passed.unshift(deferred);
 
@@ -203,12 +221,28 @@ Package('Sapphire', {
 		},
 
 	/**********************************************************************************'
+		Method: showView
+
+		Call this method to show a view
+
+		Parameters:
+			name	- the name of the view
+			...		- Any arguments passed after name will be passed to any listeners for
+					  this dialog
+	*/
+		showView : function(name)
+		{
+			var passed = Array.prototype.slice.call(arguments, 1);
+			return this.viewPages.showPage(name, passed);
+		},
+
+	/**********************************************************************************'
 		Method: hideDialog
 
 		Call this method to hide a dialog. This method must be called for all dialogs shown
 
 		Parameters:
-			name    - the name of the page
+			name	- the name of the page
 	*/
 		hideDialog : function(name)
 		{
@@ -221,7 +255,7 @@ Package('Sapphire', {
 		Call this method to hide a dialog. This method must be called for all windows shown
 
 		Parameters:
-			name    - the name of the window as passed to the new event
+			name	- the name of the window as passed to the new event
 	*/
 		hideWindow : function(name)
 		{
@@ -234,7 +268,7 @@ Package('Sapphire', {
 		Call this method to hide a dialog. This method must be called for all windows shown
 
 		Parameters:
-			name    - the name of the window as passed to the new event
+			name	- the name of the window as passed to the new event
 	*/
 		hidePage : function(name)
 		{
@@ -247,7 +281,7 @@ Package('Sapphire', {
 		Call this method during application startup to set the first dialog to show
 
 		Parameters:
-			name    - the name of the page
+			name	- the name of the page
 	*/
 		setStartPage : function(name)
 		{
@@ -307,6 +341,12 @@ Package('Sapphire', {
 		{
 			if (which) this.windows.listenPageEvent(event, which, callback)
 			else this.windows.listenGlobalEvent(event, callback);
+		},
+
+		listenViewEvent : function(event, which, callback)
+		{
+			if (which) this.viewPages.listenPageEvent(event, which, callback)
+			else this.viewPages.listenGlobalEvent(event, callback);
 		},
 
 		listenPanelEvent : function(event, set, which, callback)

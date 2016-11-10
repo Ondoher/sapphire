@@ -7,6 +7,7 @@ Package('Sapphire', {
 		{
 			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this, 'page'));
 			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this, 'dialog'));
+			SAPPHIRE.application.listenViewEvent('load', '', this.onLoad.bind(this, 'view'));
 			SAPPHIRE.application.listen('start', this.onStart.bind(this));
 			this.templates = $H({});
 		},
