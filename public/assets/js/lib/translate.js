@@ -19,6 +19,7 @@ Package('Sapphire', {
 			SAPPHIRE.application.listen('init', this.onInit.bind(this));
 			SAPPHIRE.application.listenPageEvent('load', '', this.onLoad.bind(this, 'page'));
 			SAPPHIRE.application.listenDialogEvent('load', '', this.onLoad.bind(this, 'dialog'));
+			SAPPHIRE.application.listenViewEvent('load', '', this.onLoad.bind(this, 'view'));
 
 			this.started = false;
 			this.waiting = [];
@@ -83,8 +84,9 @@ Package('Sapphire', {
 		{
 			if (!this.translations.has(text))
 			{
-	//			console.log('missing translation', text);
-				if (this.marklar == 'missing')
+				if (this.marklar == 'missing-log')
+					console.log('missing translation', text);
+				if (this.marklar == 'missing' || this.marklar == 'missing-log')
 					return 'marklar';
 			}
 			return this.translations.has(text)?this.translations.get(text):text;
