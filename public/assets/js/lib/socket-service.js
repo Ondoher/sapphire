@@ -23,7 +23,7 @@ Package('Sapphire.Services', {
 			}
 			else
 			{
-				this.socket = io.connect(server, {reconnect: false, 'connect timeout': 2000 });
+				this.socket = io(server, {reconnect: false, 'connect timeout': 2000 });
 				this.sockets[server] = this.socket;
 				this.socket.on('error', this.onSocketError.bind(this));
 				this.socket.on('disconnect', this.onSocketDisconnect.bind(this));
