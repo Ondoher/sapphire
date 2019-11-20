@@ -4,6 +4,6 @@
   "description": "",
   "dependencies": {
     "q": "^1.4.1",
-    "sapphire-express": "~0.1.4"
+    "sapphire-express": "^1.0.0"
   }
 }
